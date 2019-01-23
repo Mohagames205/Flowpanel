@@ -29,7 +29,7 @@ if(isset($_POST["login"])){
                 header("location:cr/home.php");
             }
             else{
-                $tag = "Foute gegevens!";
+                $tag = "Wrong data!";
             }
             }
     }
