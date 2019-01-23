@@ -43,7 +43,7 @@ if(isset($_POST["login"])){
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>CakeRanking</title>
+    <title>CakeRanking fork</title>
 
     <!-- Custom styles for this template -->
     <link href="style/login.css" rel="stylesheet">
