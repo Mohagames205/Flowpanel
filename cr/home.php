@@ -237,7 +237,7 @@ foreach($get_personal_audit as $personal_audit){
           $tstat = NULL;
       }
     echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
-    <td>$nieuwe_rank <b>&rarr;</b> $oude_rank</td>
+    <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
     <td bgcolor='$tstat'>$change_type</td></tr>  
     
     
