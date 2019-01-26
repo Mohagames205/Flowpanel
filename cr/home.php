@@ -205,7 +205,7 @@ if(isset($_POST["ontslag"])){
 <?php if($count > 0){
 
 ?>
-<table class="table table-striped table-dark table-bordered">
+<table class="table table-striped table-dark table-bordered table-hover">
 <th>User</th>
 <th>Wijziging</th>
 <th>Soort</th>
