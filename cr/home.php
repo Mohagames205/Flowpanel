@@ -59,20 +59,32 @@ if(isset($_GET["naam"])){
 
 else{
     $page = 0;
+    $get_personal_audit = $handle->prepare("SELECT * FROM audit_log WHERE changer = :usernamea");
+    $get_personal_audit->execute(["usernamea" => $usernamea]);
+    
 }
 
 if(isset($_POST["promote"])){
     if($user == "DNEX"){
         $userinsert = $handle->prepare("INSERT INTO user_ranks (username, rank_id, node) VALUES(:username, :rank_id, :node)");
         $userinsert->execute(["username" => $username, "rank_id" => 2, "node" => "B"]);
+        $old_rank = 1;
+        $new_rank = 2;
         header("Refresh:0");
+
 
 
     }
 
     else{
         if($rank_id < 6){
-            $rank_id = $rank_id + 1;
+            $new_rank_id = $rank_id + 1;
+            $new_rank = $new_rank_id;
+            $old_rank = $rank_id;
+            $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
+            $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
+        
+            header("Refresh:0");
                 }
         else{
             ?>
@@ -81,18 +93,15 @@ if(isset($_POST["promote"])){
                 </script>
             <?php
         }
-        $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
-        $userpromote->execute(["rank_id" => $rank_id, "username" => $username]);
         
-        header("Refresh:0");
         
     }
     $change_date = date('d/m/Y');
     $change_slachtoffer = $username;
     $change_type = "Promotie";
     $changer = $usernamea;
-    $auditquery = $handle->prepare("INSERT INTO audit_log VALUES(:changer, :change_type, :change_slachtoffer, audit_id, :change_date)");
-    $auditquery->execute(["changer" => $changer, "change_type" => $change_type, "change_slachtoffer" => $change_slachtoffer, "change_date" => $change_date]);
+    $auditquery = $handle->prepare("INSERT INTO audit_log VALUES(:changer, :change_type, :change_slachtoffer, :old_rank_id, :new_rank_id, audit_id, :change_date)");
+    $auditquery->execute(["changer" => $changer, "change_type" => $change_type, "change_slachtoffer" => $change_slachtoffer, "old_rank_id" => $old_rank, "new_rank_id" => $new_rank, "change_date" => $change_date]);
 
 }
 
@@ -107,7 +116,8 @@ if(isset($_POST["demote"])){
 
     else{
         if($rank_id > 1){
-            $rank_id = $rank_id - 1;
+            $old_rank = $rank_id;
+            $new_rank_id = $rank_id - 1;
                 }
         else{
             ?>
@@ -117,7 +127,7 @@ if(isset($_POST["demote"])){
             <?php
         }
         $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
-        $userpromote->execute(["rank_id" => $rank_id, "username" => $username]);
+        $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
         header("Refresh:0");
 
 }
@@ -125,8 +135,8 @@ $change_date = date('d/m/Y');
     $change_slachtoffer = $username;
     $change_type = "Degradatie";
     $changer = $usernamea;
-    $auditquery = $handle->prepare("INSERT INTO audit_log VALUES(:changer, :change_type, :change_slachtoffer, audit_id, :change_date)");
-    $auditquery->execute(["changer" => $changer, "change_type" => $change_type, "change_slachtoffer" => $change_slachtoffer, "change_date" => $change_date]);
+    $auditquery = $handle->prepare("INSERT INTO audit_log VALUES(:changer, :change_type, :change_slachtoffer, :old_rank_id, :new_rank_id, audit_id, :change_date)");
+    $auditquery->execute(["changer" => $changer, "change_type" => $change_type, "change_slachtoffer" => $change_slachtoffer, "old_rank_id" => $old_rank, "new_rank_id" => $new_rank_id, "change_date" => $change_date]);
 }
 if(isset($_POST["ontslag"])){
     if($user == "DNEX"){
@@ -137,6 +147,7 @@ if(isset($_POST["ontslag"])){
             <?php
     }
     else{
+        $old_rank = $rank_id;
         $userpromote = $handle->prepare("DELETE FROM user_ranks WHERE username = :username");
         $userpromote->execute(["username" => $username]);
         header("Refresh:0");
@@ -146,8 +157,8 @@ if(isset($_POST["ontslag"])){
     $change_slachtoffer = $username;
     $change_type = "Ontslag";
     $changer = $usernamea;
-    $auditquery = $handle->prepare("INSERT INTO audit_log VALUES(:changer, :change_type, :change_slachtoffer, audit_id, :change_date)");
-    $auditquery->execute(["changer" => $changer, "change_type" => $change_type, "change_slachtoffer" => $change_slachtoffer, "change_date" => $change_date]);
+    $auditquery = $handle->prepare("INSERT INTO audit_log VALUES(:changer, :change_type, :change_slachtoffer, :old_rank_id, :new_rank_id, audit_id, :change_date)");
+    $auditquery->execute(["changer" => $changer, "change_type" => $change_type, "change_slachtoffer" => $change_slachtoffer, "old_rank_id" => $old_rank, "new_rank_id" => 0, "change_date" => $change_date]);
 }
 
 
@@ -168,7 +179,9 @@ if(isset($_POST["ontslag"])){
 </head> 
 
 <body>
+  
     <div class="name">
+    <a href="home.php"> Home </a>
     <?php echo "<p id='a'> $bericht </p>" ?>
     <form method="POST">
     <button name="logout" class="btn btn-outline-light">Uitloggen</button>
@@ -178,6 +191,7 @@ if(isset($_POST["ontslag"])){
 </div>
 
 <?php if($page == 0){
+    $count = $get_personal_audit->rowCount();
     ?>
     <div class='search'>
     <form method='GET'>
@@ -188,7 +202,52 @@ if(isset($_POST["ontslag"])){
 </form>
 </div>
 
+<?php if($count > 0){
+
+?>
+<table class="table table-striped table-dark table-bordered">
+<th>User</th>
+<th>Wijziging</th>
+<th>Soort</th>
 <?php
+foreach($get_personal_audit as $personal_audit){
+    $changer = $personal_audit["changer"];
+    $oude_rank = $personal_audit["old_rank_id"];
+    $nieuwe_rank = $personal_audit["new_rank_id"];
+    $change_type = $personal_audit["change_type"];
+    $slachtoffer = $personal_audit["change_slachtoffer"]; 
+    $oude_rank_name = $handle->prepare("SELECT rank_name FROM ranks WHERE rank_id = :oude_rank");
+    $oude_rank_name->execute(["oude_rank" => $oude_rank]);
+    $nieuwe_rank_name = $handle->prepare("SELECT rank_name FROM ranks WHERE rank_id = :nieuwe_rank");
+    $nieuwe_rank_name->execute(["nieuwe_rank" => $nieuwe_rank]);
+    $nieuwe_rank_name = $nieuwe_rank_name->fetch(PDO::FETCH_ASSOC);
+    $oude_rank_name = $oude_rank_name->fetch(PDO::FETCH_ASSOC);
+    $oude_rank = $oude_rank_name["rank_name"];
+    $nieuwe_rank = $nieuwe_rank_name["rank_name"];
+    if($change_type == "Ontslag"){
+        $tstat = "red";
+      }
+      elseif($change_type == "Promotie"){
+        $tstat = "green";
+      }
+      elseif($change_type == "Degradatie"){
+        $tstat = "orange";
+      }
+      else{
+          $tstat = NULL;
+      }
+    echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
+    <td>$nieuwe_rank <b>&rarr;</b> $oude_rank</td>
+    <td bgcolor='$tstat'>$change_type</td></tr>  
+    
+    
+    
+    ";
+     
+}
+
+
+}
 }
 
 if($page == 1){
