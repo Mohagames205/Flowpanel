@@ -73,6 +73,7 @@ else{
 
 
 if(isset($_POST["promote"])){
+    $reason = $_POST["reason"];
     $change_date = date('d/m/Y');
     $change_slachtoffer = $username;
     $change_type = "Promotie";
@@ -83,7 +84,7 @@ if(isset($_POST["promote"])){
         $userinsert->execute(["username" => $username, "rank_id" => 2, "node" => "B"]);
         $old_rank = 1;
         $new_rank = 2;
-        write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank, $change_date);
+        write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank,$reason, $change_date);
         header("Refresh:0");
     }
 
@@ -94,7 +95,7 @@ if(isset($_POST["promote"])){
             $old_rank = $rank_id;
             $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
             $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
-            write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank, $change_date);
+            write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank,$reason, $change_date);
             header("Refresh:0");
         }
         else{
@@ -108,6 +109,7 @@ if(isset($_POST["promote"])){
 }
 
 if(isset($_POST["demote"])){
+    $reason = $_POST["reason"];
     $change_date = date('d/m/Y');
     $change_slachtoffer = $username;
     $change_type = "Degradatie";
@@ -126,7 +128,7 @@ if(isset($_POST["demote"])){
             $new_rank_id = $rank_id - 1;
             $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
             $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
-            write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank_id, $change_date);
+            write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank_id,$reason, $change_date);
             header("Refresh:0");
         }
         else{
@@ -141,6 +143,7 @@ if(isset($_POST["demote"])){
 
 
 if(isset($_POST["ontslag"])){
+    $reason = $_POST["reason"];
     $change_date = date('d/m/Y');
     $change_slachtoffer = $username;
     $change_type = "Ontslag";
@@ -156,7 +159,7 @@ if(isset($_POST["ontslag"])){
         $old_rank = $rank_id;
         $userpromote = $handle->prepare("DELETE FROM user_ranks WHERE username = :username");
         $userpromote->execute(["username" => $username]);
-        write_audit($changer, $change_type, $change_slachtoffer, $old_rank, 0, $change_date);
+        write_audit($changer, $change_type, $change_slachtoffer, $old_rank, 0,$reason, $change_date);
         header("Refresh:0");
     }
 }
@@ -205,7 +208,7 @@ if(isset($_POST["ontslag"])){
 ?>
 <table class="table table-striped table-dark table-bordered table-hover">
 <tr>
-<th colspan="3" class="nametable"> 
+<th colspan="4" class="nametable"> 
 <form method="GET" id="option">
     <select id="select" placeholder="optie" name="queryoption" onchange='if(this.value != 0) { this.form.submit(); }'>
         <option>Keuze</option>
@@ -220,6 +223,7 @@ if(isset($_POST["ontslag"])){
 
 <th>User</th>
 <th>Wijziging</th>
+<th>Reden</th>
 <th>Soort</th>
 
 <?php
@@ -237,6 +241,7 @@ if($qo == "personal"){
         $nieuwe_rank = $personal_audit["new_rank_id"];
         $change_type = $personal_audit["change_type"];
         $slachtoffer = $personal_audit["change_slachtoffer"]; 
+        $reason = $personal_audit["reason"];
         $oude_rank_name = $handle->prepare("SELECT rank_name FROM ranks WHERE rank_id = :oude_rank");
         $oude_rank_name->execute(["oude_rank" => $oude_rank]);
         $nieuwe_rank_name = $handle->prepare("SELECT rank_name FROM ranks WHERE rank_id = :nieuwe_rank");
@@ -259,6 +264,7 @@ if($qo == "personal"){
           }
         echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
         <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
+        <td>$reason</td>
         <td bgcolor='$tstat'>$change_type</td></tr>";
          
     }
@@ -271,6 +277,7 @@ if($qo == "global"){
         $oude_rank = $global_audit["old_rank_id"];
         $nieuwe_rank = $global_audit["new_rank_id"];
         $change_type = $global_audit["change_type"];
+        $reason = $global_audit["reason"];
         $slachtoffer = $global_audit["change_slachtoffer"]; 
         $oude_rank_name = $handle->prepare("SELECT rank_name FROM ranks WHERE rank_id = :oude_rank");
         $oude_rank_name->execute(["oude_rank" => $oude_rank]);
@@ -294,6 +301,7 @@ if($qo == "global"){
           }
         echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
         <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
+        <td>$reason</td>
         <td bgcolor='$tstat'>$change_type</td></tr>";
          
     }
@@ -328,6 +336,8 @@ if($page == 1){
         <div class="changers">
         <button name="promote" id="promote">Promoveren</button>
         </div>
+        <br>
+        <input type="text" name="reason" placeholder="Reden" required>
         <?php
     }
     else{
@@ -337,6 +347,8 @@ if($page == 1){
     <button name="demote" id="demote">Degraderen</button>
     <button name="ontslag" id="ontslag">Ontslagen</button>
     </div>
+    <br>
+    <input type="text" name="reason" placeholder="Reden" required>
     <?php
 }
 ?>
@@ -356,6 +368,7 @@ if($page == 1){
 }
 ?>
 </div>
+<p style="color: white; text-align: center;">Made with ♥ by Mohamed | <a href="https://github.com/Mohagames205/flowpanel">FlowPanel</a> version 1.2 PreRelease </p>
 </main>
 </body>
 </html>
