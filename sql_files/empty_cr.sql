@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 26, 2019 at 07:21 PM
+-- Generation Time: Jan 29, 2019 at 07:02 PM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.2.11
 
@@ -34,6 +34,7 @@ CREATE TABLE `audit_log` (
   `change_slachtoffer` varchar(225) NOT NULL,
   `old_rank_id` int(11) NOT NULL,
   `new_rank_id` int(11) NOT NULL,
+  `reason` varchar(225) NOT NULL,
   `audit_id` int(10) NOT NULL,
   `change_date` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -63,6 +64,16 @@ INSERT INTO `ranks` (`rank_id`, `rank_name`, `perm_id`) VALUES
 (5, 'Administrator', 3),
 (6, 'CoOwner', 4),
 (7, 'Owner', 5);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reports`
+--
+
+CREATE TABLE `reports` (
+  `report_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -126,7 +137,7 @@ ALTER TABLE `user_ranks`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `audit_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `users`
