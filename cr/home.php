@@ -69,9 +69,6 @@ else{
     
 }
 
-
-
-
 if(isset($_POST["promote"])){
     $reason = $_POST["reason"];
     $change_date = date('d/m/Y');
@@ -164,7 +161,11 @@ if(isset($_POST["ontslag"])){
     }
 }
 
-
+if(isset($_POST["custom"])){
+    $_SESSION["custom"] = $username;
+    $_SESSION["reason"] = $_POST["reason"];
+    header("location:custom.php");
+}
 ?>
 
 <!DOCTYPE html>
@@ -259,6 +260,9 @@ if($qo == "personal"){
           elseif($change_type == "Degradatie"){
             $tstat = "orange";
           }
+          elseif($change_type == "Custom"){
+              $tstat = "purple";
+          }
           else{
               $tstat = NULL;
           }
@@ -296,6 +300,9 @@ if($qo == "global"){
           elseif($change_type == "Degradatie"){
             $tstat = "orange";
           }
+          elseif($change_type == "Custom"){
+            $tstat = "purple";
+        }
           else{
               $tstat = NULL;
           }
@@ -319,7 +326,7 @@ if($page == 1){
     <th colspan="3" class="nametable"> <?php echo $username ?> </th>
     <tr>
     <th scope="row">Rank</th>
-    <th scope="row">Node</th>
+    <th scope="row">Server</th>
 </tr>
 <tr>
 <td><?php echo $rank ?></td>
@@ -335,17 +342,20 @@ if($page == 1){
         ?>
         <div class="changers">
         <button name="promote" id="promote">Promoveren</button>
+        <button name="custom" id="custom">Custom</button>
         </div>
         <br>
         <input type="text" name="reason" placeholder="Reden" required>
         <?php
     }
+
     else{
         ?>
     <div class="changers">
     <button name="promote" id="promote">Promoveren</button>
     <button name="demote" id="demote">Degraderen</button>
     <button name="ontslag" id="ontslag">Ontslagen</button>
+    <button name="custom" id="custom">Custom</button>
     </div>
     <br>
     <input type="text" name="reason" placeholder="Reden" required>
