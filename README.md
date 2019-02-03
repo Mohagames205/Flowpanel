@@ -12,4 +12,4 @@
 - [ ]  Installer
 
 #### How to install?
-#### Coming soon, stay tuned!
+###### Coming soon, stay tuned!
