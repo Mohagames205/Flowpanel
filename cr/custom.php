@@ -36,31 +36,39 @@ if(isset($_POST["logout"])){
 
 
 if(isset($_POST["nieuwe_rank"])){
-    $reason = $_SESSION["reason"];
-    $change_date = date('d/m/Y');
-    $change_type = "Custom";
-    if($user == "DNEX"){
-        $old_rank = 1;
-        $userinsert = $handle->prepare("INSERT INTO user_ranks (username, rank_id, node) VALUES(:username, :rank_id, :node)");
-        $userinsert->execute(["username" => $username, "rank_id" => $_POST["nieuwe_rank"], "node" => "B"]);
-        $new_rank = $_POST["nieuwe_rank"];
-        write_audit($usernamea, $change_type, $username, $old_rank, $new_rank,$reason, $change_date);
-        unset($_SESSION['custom']);
-        unset($_SESSION['reason']);
-        header("LOCATION:http://localhost/cr/home.php?naam=$username");
+    if($_POST["nieuwe_rank"] < 7 AND $_POST["nieuwe_rank"] >= 0){
+        $reason = $_SESSION["reason"];
+        $change_date = date('d/m/Y');
+        $change_type = "Custom";
+        if($user == "DNEX"){
+            $old_rank = 1;
+            $userinsert = $handle->prepare("INSERT INTO user_ranks (username, rank_id, node) VALUES(:username, :rank_id, :node)");
+            $userinsert->execute(["username" => $username, "rank_id" => $_POST["nieuwe_rank"], "node" => "B"]);
+            $new_rank = $_POST["nieuwe_rank"];
+            write_audit($usernamea, $change_type, $username, $old_rank, $new_rank,$reason, $change_date);
+            unset($_SESSION['custom']);
+            unset($_SESSION['reason']);
+            header("LOCATION:http://localhost/cr/home.php?naam=$username");
+        }
+        else{
+            $rank_id_query = $handle->prepare("SELECT rank_id, node FROM user_ranks WHERE username = :username");
+            $rank_id_query->execute(["username" => $username]);
+            $userdata = $rank_id_query->fetch(PDO::FETCH_ASSOC);
+            $old_rank = $userdata["rank_id"];
+            $wijzigen = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
+            $wijzigen->execute(["rank_id" => $_POST["nieuwe_rank"], "username" => $username]);
+            $new_rank = $_POST["nieuwe_rank"];;
+            $reason = $_SESSION["reason"];
+            write_audit($usernamea, $change_type, $username, $old_rank, $new_rank,$reason, $change_date);
+            header("LOCATION:http://localhost/cr/home.php?naam=$username");
+        }
     }
     else{
-        $rank_id_query = $handle->prepare("SELECT rank_id, node FROM user_ranks WHERE username = :username");
-        $rank_id_query->execute(["username" => $username]);
-        $userdata = $rank_id_query->fetch(PDO::FETCH_ASSOC);
-        $old_rank = $userdata["rank_id"];
-        $wijzigen = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
-        $wijzigen->execute(["rank_id" => $_POST["nieuwe_rank"], "username" => $username]);
-        $new_rank = $_POST["nieuwe_rank"];;
-        $reason = $_SESSION["reason"];
-        write_audit($usernamea, $change_type, $username, $old_rank, $new_rank,$reason, $change_date);
-        header("LOCATION:http://localhost/cr/home.php?naam=$username");
+        ?>
+        <script> alert("U kan deze persoon geen Owner maken!"); </script>
+        <?php
     }
+        
     
 }
 
