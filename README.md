@@ -1,4 +1,4 @@
-![Logo](flowpanel/foto/jhbi.png)
+![Logo](https://github.com/Mohagames205/flowpanel/blob/master/foto/jhbi.png)
 
 # FlowPanel
 ### Rank management made easy
