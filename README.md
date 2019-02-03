@@ -1,4 +1,4 @@
-![Logo](https://github.com/Mohagames205/flowpanel/blob/master/foto/jhbie.png)
+
 
 # FlowPanel
 ### Rank management made easy
@@ -15,3 +15,6 @@
 
 ### How to install?
 Coming soon, stay tuned!
+
+
+![Logo](https://github.com/Mohagames205/flowpanel/blob/master/foto/jhbie.png)
