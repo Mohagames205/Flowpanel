@@ -1,3 +1,5 @@
+![Logo](flowpanel/foto/jhbi.png)
+
 # FlowPanel
 ### Rank management made easy
 
