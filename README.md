@@ -2,14 +2,14 @@
 ### Rank management made easy
 
 
-**Features**
+### Features
 * Promote/Demote/Dismissal
 * You can change the rank of a user in one click!
 * You see a log of every rank change
 
-**Coming soon**
+ ### Coming soon
 - [ ] Permission system
 - [ ]  Installer
 
 #### How to install?
-###### Coming soon, stay tuned!
+Coming soon, stay tuned!
