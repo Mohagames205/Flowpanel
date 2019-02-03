@@ -11,5 +11,5 @@
 - [ ] Permission system
 - [ ]  Installer
 
-#### How to install?
+### How to install?
 Coming soon, stay tuned!
