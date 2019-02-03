@@ -8,8 +8,8 @@
 * You see a log of every rank change
 
 **Coming soon**
-- [] Permission system
-- []  Installer
+- [ ] Permission system
+- [ ]  Installer
 
 #### How to install?
 #### Coming soon, stay tuned!
