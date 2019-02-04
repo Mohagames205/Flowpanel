@@ -68,7 +68,12 @@ else{
 
     
 }
+if(isset($_POST["warn"])){
+    $_SESSION["warned"] = $_POST["warn"];
+    $_SESSION["warner"] = $usernamea;
+    header("location:includes/warn.php");
 
+}
 if(isset($_POST["promote"])){
     $reason = $_POST["reason"];
     $change_date = date('d/m/Y');
@@ -81,7 +86,7 @@ if(isset($_POST["promote"])){
         $userinsert->execute(["username" => $username, "rank_id" => 2, "node" => "B"]);
         $old_rank = 1;
         $new_rank = 2;
-        write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank,$reason, $change_date);
+        rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank,$reason, $change_date);
         header("Refresh:0");
     }
 
@@ -92,7 +97,7 @@ if(isset($_POST["promote"])){
             $old_rank = $rank_id;
             $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
             $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
-            write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank,$reason, $change_date);
+            rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank,$reason, $change_date);
             header("Refresh:0");
         }
         else{
@@ -125,7 +130,7 @@ if(isset($_POST["demote"])){
             $new_rank_id = $rank_id - 1;
             $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
             $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
-            write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank_id,$reason, $change_date);
+            rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank_id,$reason, $change_date);
             header("Refresh:0");
         }
         else{
@@ -156,7 +161,7 @@ if(isset($_POST["ontslag"])){
         $old_rank = $rank_id;
         $userpromote = $handle->prepare("DELETE FROM user_ranks WHERE username = :username");
         $userpromote->execute(["username" => $username]);
-        write_audit($changer, $change_type, $change_slachtoffer, $old_rank, 0,$reason, $change_date);
+        rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, 0,$reason, $change_date);
         header("Refresh:0");
     }
 }
@@ -323,14 +328,16 @@ if($page == 1){
 <div class="profile">
 
 <table class="table table-striped table-dark table-bordered">
-    <th colspan="3" class="nametable"> <?php echo $username ?> </th>
+    <th colspan="3" class="nametable"> <?php echo $username ?></th>
     <tr>
     <th scope="row">Rank</th>
     <th scope="row">Server</th>
+    <th scope="row">Warn</th>
 </tr>
 <tr>
 <td><?php echo $rank ?></td>
 <td><?php echo $node ?> </td>
+<td> <form method="POST"><button type="submit" name="warn" value="<?php echo $username ?>">Warn</button></form></td>
 </tr>
     
 </tr>
@@ -374,6 +381,30 @@ if($page == 1){
 
 </div>
 </form>
+<?php
+if(isset($_GET["showq"])){
+    $qo = $_GET["showoption"];
+}
+if(!isset($_GET["showq"])){
+    $qo = "changes";
+}
+
+?>
+<table class="table table-striped table-dark table-bordered table-hover">
+<tr>
+<th colspan="4" class="nametable"> 
+<form method="GET" id="showq">
+    <select id="select" placeholder="optie" name="showoption" onchange='if(this.value != 0) { this.form.submit(); }'>
+        <option>Keuze</option>
+        <option value="global">Warns</option>
+        <option value="personal">Changes</option>
+    </select>
+</form>
+
+
+ </th></tr>
+
+
 <?php
 }
 ?>

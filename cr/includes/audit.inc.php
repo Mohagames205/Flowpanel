@@ -2,7 +2,7 @@
 
 
 
-function write_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank, $reason, $change_date){
+function rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank, $reason, $change_date){
     $path = $_SERVER['DOCUMENT_ROOT'] . "/kaas.php";
     include("$path");
     $auditquery = $handle->prepare("INSERT INTO audit_log VALUES(:changer, :change_type, :change_slachtoffer, :old_rank_id, :new_rank_id, :reason, audit_id, :change_date)");
