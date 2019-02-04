@@ -45,10 +45,10 @@ if(isset($_POST["nieuwe_rank"])){
             $userinsert = $handle->prepare("INSERT INTO user_ranks (username, rank_id, node) VALUES(:username, :rank_id, :node)");
             $userinsert->execute(["username" => $username, "rank_id" => $_POST["nieuwe_rank"], "node" => "B"]);
             $new_rank = $_POST["nieuwe_rank"];
-            write_audit($usernamea, $change_type, $username, $old_rank, $new_rank,$reason, $change_date);
+            rank_audit($usernamea, $change_type, $username, $old_rank, $new_rank,$reason, $change_date);
             unset($_SESSION['custom']);
             unset($_SESSION['reason']);
-            header("LOCATION:http://localhost/cr/home.php?naam=$username");
+            header("LOCATION:home.php?naam=$username");
         }
         else{
             $rank_id_query = $handle->prepare("SELECT rank_id, node FROM user_ranks WHERE username = :username");
@@ -59,8 +59,8 @@ if(isset($_POST["nieuwe_rank"])){
             $wijzigen->execute(["rank_id" => $_POST["nieuwe_rank"], "username" => $username]);
             $new_rank = $_POST["nieuwe_rank"];;
             $reason = $_SESSION["reason"];
-            write_audit($usernamea, $change_type, $username, $old_rank, $new_rank,$reason, $change_date);
-            header("LOCATION:http://localhost/cr/home.php?naam=$username");
+            rank_audit($usernamea, $change_type, $username, $old_rank, $new_rank,$reason, $change_date);
+            header("LOCATION:home.php?naam=$username");
         }
     }
     else{
