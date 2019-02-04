@@ -303,12 +303,19 @@ if($page == 1){
     <tr>
     <th scope="row">Rank</th>
     <th scope="row">Server</th>
+    <?php if($user == "EX"){ ?>
     <th scope="row">Warn</th>
+    <?php } ?>
 </tr>
 <tr>
 <td><?php echo $rank ?></td>
 <td><?php echo $node ?> </td>
+<?php 
+if($user == "EX"){
+    ?>
 <td> <form method="POST"><button type="submit" name="warn" value="<?php echo $username ?>">Warn</button></form></td>
+<?php }
+?>
 </tr>
     
 </tr>
@@ -355,11 +362,12 @@ if($page == 1){
 
 <?php
 #warnings
+if($user == "EX"){
 if(isset($_POST["showoption"])){
     $s_o = $_POST["showoption"];
 }
 if(!isset($_POST["showoption"])){
-    $s_o = "fakkakakakkaka";
+    $s_o = "changes";
 }
 
 ?>
@@ -378,43 +386,46 @@ if(!isset($_POST["showoption"])){
 <tr>
 
 <?php
-if($s_o == "warns"){
-    ?>
-    <th scope="row">User</th>
-    <th scope="row">Reason</th>
-    <th scope="row">Warning type</th>
-    </tr>
-<?php
-    foreach($get_scope_warns as $scope_warns){
-        $gewaarschuwde = $scope_warns["gewaarschuwde"];
-        $waarschuwer = $scope_warns["waarschuwer"];
-        $reden = $scope_warns["reden"];
-        $type = $scope_warns["warn_type"];
-        echo "<tr><td>$waarschuwer <b>&rarr;</b> $gewaarschuwde</td>
-        <td>$reden</td>
-        <td>$type</td></tr>";
 
+    if($s_o == "warns"){
+        ?>
+        <th scope="row">User</th>
+        <th scope="row">Reason</th>
+        <th scope="row">Warning type</th>
+        </tr>
+    <?php
+        foreach($get_scope_warns as $scope_warns){
+            $gewaarschuwde = $scope_warns["gewaarschuwde"];
+            $waarschuwer = $scope_warns["waarschuwer"];
+            $reden = $scope_warns["reden"];
+            $type = $scope_warns["warn_type"];
+            echo "<tr><td>$waarschuwer <b>&rarr;</b> $gewaarschuwde</td>
+            <td>$reden</td>
+            <td>$type</td></tr>";
+    
+        }
+    }
+    else{
+        foreach($get_scope_audit as $scope_audit){
+            $changer = $scope_audit["changer"];
+            $oude_rank = $scope_audit["old_rank_id"];
+            $nieuwe_rank = $scope_audit["new_rank_id"];
+            $change_type = $scope_audit["change_type"];
+            $reason = $scope_audit["reason"];
+            $slachtoffer = $scope_audit["change_slachtoffer"]; 
+            $oude_rank = get_rank_name($oude_rank);
+            $nieuwe_rank = get_rank_name($nieuwe_rank);
+            $tstat = get_color($change_type);
+            echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
+            <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
+            <td>$reason</td>
+            <td bgcolor='$tstat'>$change_type</td></tr>";
+             
+        }
+       
     }
 }
-else{
-    foreach($get_scope_audit as $scope_audit){
-        $changer = $scope_audit["changer"];
-        $oude_rank = $scope_audit["old_rank_id"];
-        $nieuwe_rank = $scope_audit["new_rank_id"];
-        $change_type = $scope_audit["change_type"];
-        $reason = $scope_audit["reason"];
-        $slachtoffer = $scope_audit["change_slachtoffer"]; 
-        $oude_rank = get_rank_name($oude_rank);
-        $nieuwe_rank = get_rank_name($nieuwe_rank);
-        $tstat = get_color($change_type);
-        echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
-        <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
-        <td>$reason</td>
-        <td bgcolor='$tstat'>$change_type</td></tr>";
-         
-    }
-   
-}
+
 
 #end of page 1
 }
