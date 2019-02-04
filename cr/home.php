@@ -2,6 +2,8 @@
 session_start();
 include("../kaas.php");
 include("includes/audit.inc.php");
+include("includes/rank_id.inc.php");
+include("includes/color.inc.php");
 
 if(isset($_SESSION["username"])){
     $usernamea = $_SESSION["username"];
@@ -38,7 +40,15 @@ if(isset($_GET["naam"])){
         $rank = $rank_query->fetch(PDO::FETCH_ASSOC);
         $rank = $rank["rank_name"];
         $node = $userdata["node"];
+        #changes en warns ophalen
+        #audit
+        $get_scope_audit = $handle->prepare("SELECT * FROM audit_log WHERE change_slachtoffer = :username");
+        $get_scope_audit->execute(["username" => $username]);
+        #warns
+        $get_scope_warns = $handle->prepare("SELECT * FROM warns WHERE gewaarschuwde = :username");
+        $get_scope_warns->execute(["username" => $username]);
 
+        #node system
         if(strtolower($node) == "c"){
             $node = "CakeCraft Quest";
         }
@@ -248,29 +258,9 @@ if($qo == "personal"){
         $change_type = $personal_audit["change_type"];
         $slachtoffer = $personal_audit["change_slachtoffer"]; 
         $reason = $personal_audit["reason"];
-        $oude_rank_name = $handle->prepare("SELECT rank_name FROM ranks WHERE rank_id = :oude_rank");
-        $oude_rank_name->execute(["oude_rank" => $oude_rank]);
-        $nieuwe_rank_name = $handle->prepare("SELECT rank_name FROM ranks WHERE rank_id = :nieuwe_rank");
-        $nieuwe_rank_name->execute(["nieuwe_rank" => $nieuwe_rank]);
-        $nieuwe_rank_name = $nieuwe_rank_name->fetch(PDO::FETCH_ASSOC);
-        $oude_rank_name = $oude_rank_name->fetch(PDO::FETCH_ASSOC);
-        $oude_rank = $oude_rank_name["rank_name"];
-        $nieuwe_rank = $nieuwe_rank_name["rank_name"];
-        if($change_type == "Ontslag"){
-            $tstat = "red";
-          }
-          elseif($change_type == "Promotie"){
-            $tstat = "green";
-          }
-          elseif($change_type == "Degradatie"){
-            $tstat = "orange";
-          }
-          elseif($change_type == "Custom"){
-              $tstat = "purple";
-          }
-          else{
-              $tstat = NULL;
-          }
+        $oude_rank = get_rank_name($oude_rank);
+        $nieuwe_rank = get_rank_name($nieuwe_rank);
+        $tstat = get_color($change_type);
         echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
         <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
         <td>$reason</td>
@@ -288,29 +278,9 @@ if($qo == "global"){
         $change_type = $global_audit["change_type"];
         $reason = $global_audit["reason"];
         $slachtoffer = $global_audit["change_slachtoffer"]; 
-        $oude_rank_name = $handle->prepare("SELECT rank_name FROM ranks WHERE rank_id = :oude_rank");
-        $oude_rank_name->execute(["oude_rank" => $oude_rank]);
-        $nieuwe_rank_name = $handle->prepare("SELECT rank_name FROM ranks WHERE rank_id = :nieuwe_rank");
-        $nieuwe_rank_name->execute(["nieuwe_rank" => $nieuwe_rank]);
-        $nieuwe_rank_name = $nieuwe_rank_name->fetch(PDO::FETCH_ASSOC);
-        $oude_rank_name = $oude_rank_name->fetch(PDO::FETCH_ASSOC);
-        $oude_rank = $oude_rank_name["rank_name"];
-        $nieuwe_rank = $nieuwe_rank_name["rank_name"];
-        if($change_type == "Ontslag"){
-            $tstat = "red";
-          }
-          elseif($change_type == "Promotie"){
-            $tstat = "green";
-          }
-          elseif($change_type == "Degradatie"){
-            $tstat = "orange";
-          }
-          elseif($change_type == "Custom"){
-            $tstat = "purple";
-        }
-          else{
-              $tstat = NULL;
-          }
+        $oude_rank = get_rank_name($oude_rank);
+        $nieuwe_rank = get_rank_name($nieuwe_rank);
+        $tstat = get_color($change_type);
         echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
         <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
         <td>$reason</td>
@@ -326,6 +296,7 @@ if($page == 1){
     ?>
 <div class="onderkant">  
 <div class="profile">
+
 
 <table class="table table-striped table-dark table-bordered">
     <th colspan="3" class="nametable"> <?php echo $username ?></th>
@@ -381,31 +352,71 @@ if($page == 1){
 
 </div>
 </form>
+
 <?php
-if(isset($_GET["showq"])){
-    $qo = $_GET["showoption"];
+#warnings
+if(isset($_POST["showoption"])){
+    $s_o = $_POST["showoption"];
 }
-if(!isset($_GET["showq"])){
-    $qo = "changes";
+if(!isset($_POST["showoption"])){
+    $s_o = "fakkakakakkaka";
 }
 
 ?>
 <table class="table table-striped table-dark table-bordered table-hover">
 <tr>
 <th colspan="4" class="nametable"> 
-<form method="GET" id="showq">
+<form method="POST" id="option">
     <select id="select" placeholder="optie" name="showoption" onchange='if(this.value != 0) { this.form.submit(); }'>
-        <option>Keuze</option>
-        <option value="global">Warns</option>
-        <option value="personal">Changes</option>
+        <option value="changes">Keuze</option>
+        <option value="warns">Warns</option>
+        <option value="changes">Changes</option>
     </select>
 </form>
+</th></tr>
 
-
- </th></tr>
-
+<tr>
 
 <?php
+if($s_o == "warns"){
+    ?>
+    <th scope="row">User</th>
+    <th scope="row">Reason</th>
+    <th scope="row">Warning type</th>
+    </tr>
+<?php
+    foreach($get_scope_warns as $scope_warns){
+        $gewaarschuwde = $scope_warns["gewaarschuwde"];
+        $waarschuwer = $scope_warns["waarschuwer"];
+        $reden = $scope_warns["reden"];
+        $type = $scope_warns["warn_type"];
+        echo "<tr><td>$waarschuwer <b>&rarr;</b> $gewaarschuwde</td>
+        <td>$reden</td>
+        <td>$type</td></tr>";
+
+    }
+}
+else{
+    foreach($get_scope_audit as $scope_audit){
+        $changer = $scope_audit["changer"];
+        $oude_rank = $scope_audit["old_rank_id"];
+        $nieuwe_rank = $scope_audit["new_rank_id"];
+        $change_type = $scope_audit["change_type"];
+        $reason = $scope_audit["reason"];
+        $slachtoffer = $scope_audit["change_slachtoffer"]; 
+        $oude_rank = get_rank_name($oude_rank);
+        $nieuwe_rank = get_rank_name($nieuwe_rank);
+        $tstat = get_color($change_type);
+        echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
+        <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
+        <td>$reason</td>
+        <td bgcolor='$tstat'>$change_type</td></tr>";
+         
+    }
+   
+}
+
+#end of page 1
 }
 ?>
 </div>

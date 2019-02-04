@@ -68,7 +68,7 @@ if(isset($_POST["nieuwe_rank"])){
         <script> alert("U kan deze persoon geen Owner maken!"); </script>
         <?php
     }
-        
+    
     
 }
 
@@ -131,4 +131,3 @@ if(isset($_POST["nieuwe_rank"])){
 <p style="color: white; text-align: center;">Made with ♥ by Mohamed | <a href="https://github.com/Mohagames205/flowpanel">FlowPanel</a> version 1.2 PreRelease </p>
 </main>
 </body>
-</html>
