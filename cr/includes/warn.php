@@ -21,7 +21,7 @@ if(isset($_POST["warn"])){
         $warn_query->execute(["waarschuwer" => $warner, "gewaarschuwde" => $username, "reden" => $reden, "warn_type" => $warn_type]);
         unset($_SESSION['warned']);
         unset($_SESSION['warner']);
-        header("location:../../../index.php");
+        header("location:../home.php");
     }
     else{
         ?>
