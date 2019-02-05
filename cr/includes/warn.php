@@ -14,8 +14,8 @@ if(isset($_SESSION["warned"])){
 }
 
 if(isset($_POST["warn"])){
-    $reden = $_POST["reden"];
-    $warn_type = $_POST["warn_type"];
+    $reden = htmlspecialchars($_POST["reden"]);
+    $warn_type = htmlspecialchars($_POST["warn_type"]);
     if($warn_type == "3w" OR $warn_type == "2w" OR $warn_type == "1w"){
         $warn_query = $handle->prepare("INSERT INTO warns values(warn_id, :waarschuwer, :gewaarschuwde, :reden, :warn_type)");
         $warn_query->execute(["waarschuwer" => $warner, "gewaarschuwde" => $username, "reden" => $reden, "warn_type" => $warn_type]);

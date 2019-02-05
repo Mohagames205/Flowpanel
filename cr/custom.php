@@ -4,9 +4,9 @@ include("../kaas.php");
 include("includes/audit.inc.php");
 
 if(isset($_SESSION["custom"])){
-    $usernamea = $_SESSION["username"];
+    $usernamea = htmlspecialchars($_SESSION["username"]);
     $bericht = "Welkom $usernamea";
-    $username = $_SESSION["custom"];
+    $username = htmlspecialchars($_SESSION["custom"]);
     $naam = $username;
     $usernamequery = $handle->prepare("SELECT username FROM user_ranks WHERE username = :naam");
     $us = $usernamequery->execute(["naam" => $naam]);
@@ -37,9 +37,9 @@ if(isset($_POST["logout"])){
 
 if(isset($_POST["nieuwe_rank"])){
     $allowed_ranks = array(0, 1, 2, 3, 4, 5, 6);
-    $nieuwe_rank = $_POST["nieuwe_rank"];
+    $nieuwe_rank = htmlspecialchars($_POST["nieuwe_rank"]);
     if(in_array($nieuwe_rank, $allowed_ranks)){
-        $reason = $_SESSION["reason"];
+        $reason = htmlspecialchars($_SESSION["reason"]);
         $change_date = date('d/m/Y');
         $change_type = "Custom";
         if($user == "DNEX"){

@@ -23,7 +23,7 @@ if(isset($_POST["logout"])){
 
 if(isset($_GET["naam"])){
     $page = 1;
-    $naam = $_GET["naam"];
+    $naam = htmlspecialchars($_GET["naam"]);
     $usernamequery = $handle->prepare("SELECT username FROM user_ranks WHERE username = :naam");
     $us = $usernamequery->execute(["naam" => $naam]);
     $username = $usernamequery->fetch(PDO::FETCH_ASSOC);
@@ -79,13 +79,13 @@ else{
     
 }
 if(isset($_POST["warn"])){
-    $_SESSION["warned"] = $_POST["warn"];
+    $_SESSION["warned"] = htmlspecialchars($_POST["warn"]);
     $_SESSION["warner"] = $usernamea;
     header("location:includes/warn.php");
 
 }
 if(isset($_POST["promote"])){
-    $reason = $_POST["reason"];
+    $reason = htmlspecialchars($_POST["reason"]);
     $change_date = date('d/m/Y');
     $change_slachtoffer = $username;
     $change_type = "Promotie";
@@ -121,7 +121,7 @@ if(isset($_POST["promote"])){
 }
 
 if(isset($_POST["demote"])){
-    $reason = $_POST["reason"];
+    $reason = htmlspecialchars($_POST["reason"]);
     $change_date = date('d/m/Y');
     $change_slachtoffer = $username;
     $change_type = "Degradatie";
@@ -155,7 +155,7 @@ if(isset($_POST["demote"])){
 
 
 if(isset($_POST["ontslag"])){
-    $reason = $_POST["reason"];
+    $reason = htmlspecialchars($_POST["reason"]);
     $change_date = date('d/m/Y');
     $change_slachtoffer = $username;
     $change_type = "Ontslag";
@@ -178,7 +178,7 @@ if(isset($_POST["ontslag"])){
 
 if(isset($_POST["custom"])){
     $_SESSION["custom"] = $username;
-    $_SESSION["reason"] = $_POST["reason"];
+    $_SESSION["reason"] = htmlspecialchars($_POST["reason"]);
     header("location:custom.php");
 }
 ?>
@@ -245,7 +245,7 @@ if(isset($_POST["custom"])){
 <?php
 
 if(isset($_GET["queryoption"])){
-    $qo = $_GET["queryoption"];
+    $qo = htmlspecialchars($_GET["queryoption"]);
 }
 if(!isset($_GET["queryoption"])){
     $qo = "personal";
@@ -364,7 +364,7 @@ if($user == "EX"){
 #warnings
 if($user == "EX"){
 if(isset($_POST["showoption"])){
-    $s_o = $_POST["showoption"];
+    $s_o = htmlspecialchars($_POST["showoption"]);
 }
 if(!isset($_POST["showoption"])){
     $s_o = "changes";

@@ -15,8 +15,8 @@ if(isset($_POST["login"])){
         $statement = $handle->prepare($query);
         $statement->execute(
             array(
-                'username' => $_POST["username"],
-                'password' => $_POST["password"]
+                'username' => htmlspecialchars($_POST["username"]),
+                'password' => htmlspecialchars($_POST["password"])
             )
             );
             $count = $statement->rowCount();
@@ -40,8 +40,7 @@ if(isset($_POST["login"])){
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Inlog pagina om toegang te krijgen tot het staffpaneel">
 
     <title>CakeRanking</title>
 
