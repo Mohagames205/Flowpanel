@@ -36,7 +36,9 @@ if(isset($_POST["logout"])){
 
 
 if(isset($_POST["nieuwe_rank"])){
-    if($_POST["nieuwe_rank"] < 7 AND $_POST["nieuwe_rank"] >= 0){
+    $allowed_ranks = array(0, 1, 2, 3, 4, 5, 6);
+    $nieuwe_rank = $_POST["nieuwe_rank"];
+    if(in_array($nieuwe_rank, $allowed_ranks)){
         $reason = $_SESSION["reason"];
         $change_date = date('d/m/Y');
         $change_type = "Custom";
