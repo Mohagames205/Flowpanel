@@ -61,7 +61,6 @@ if(isset($_GET["naam"])){
         
     }
     else{
-        #een extra stukje tekst
         $username = $naam;
         $rank = "Guest";
         $node = "De gebruiker staat niet in onze database";
