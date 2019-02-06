@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../../kaas.php");
+include("../../connect.php");
 if(isset($_POST["logout"])){
     session_destroy();
     header("location:../../../index.php");

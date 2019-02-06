@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../kaas.php");
+include("../connect.php");
 include("includes/audit.inc.php");
 
 if(isset($_SESSION["custom"])){
