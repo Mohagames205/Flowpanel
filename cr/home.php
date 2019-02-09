@@ -1,15 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    
+    <title>CakeRankings - Staff</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="style/main.css"/>
+</head> 
+
+<body>
 <?php
 session_start();
 include("../connect.php");
 include("includes/audit.inc.php");
 include("includes/rank_id.inc.php");
 include("includes/color.inc.php");
+include("includes/permission_manager.php");
 
 if(isset($_SESSION["username"])){
     $usernamea = $_SESSION["username"];
     $bericht = "Welkom $usernamea";
-    
-
+    #Getting permission ID
+    $get_perm_id = $handle->prepare("SELECT perm_id FROM users WHERE username = :username");
+    $get_perm_id->execute(["username" => $usernamea]);
+    $perm_id = $get_perm_id->fetch(PDO::FETCH_ASSOC);
+    $perm_id = $perm_id["perm_id"];
 }
 
 else{
@@ -35,10 +57,7 @@ if(isset($_GET["naam"])){
         $rank_id_query->execute(["username" => $username]);
         $userdata = $rank_id_query->fetch(PDO::FETCH_ASSOC);
         $rank_id = $userdata["rank_id"];
-        $rank_query = $handle->prepare("SELECT rank_name, perm_id FROM ranks WHERE rank_id = :rank_id");
-        $rank_query->execute(["rank_id" => $rank_id]);
-        $rank = $rank_query->fetch(PDO::FETCH_ASSOC);
-        $rank = $rank["rank_name"];
+        $rank = get_rank_name($rank_id);
         $node = $userdata["node"];
         #changes en warns ophalen
         #audit
@@ -65,6 +84,7 @@ if(isset($_GET["naam"])){
         $rank = "Guest";
         $node = "De gebruiker staat niet in onze database";
         $user = "DNEX";
+        $rank_id = 1;
     }
 
 
@@ -84,40 +104,48 @@ if(isset($_POST["warn"])){
     header("location:includes/warn.php");
 
 }
+
 if(isset($_POST["promote"])){
     $reason = htmlspecialchars($_POST["reason"]);
     $change_date = date('d/m/Y');
     $change_slachtoffer = $username;
     $change_type = "Promotie";
     $changer = $usernamea;
-
+    $perm = get_perm($perm_id, $change_type, $rank_id);
+    echo $perm;
     if($user == "DNEX"){
-        $userinsert = $handle->prepare("INSERT INTO user_ranks (username, rank_id, node) VALUES(:username, :rank_id, :node)");
-        $userinsert->execute(["username" => $username, "rank_id" => 2, "node" => "B"]);
-        $old_rank = 1;
-        $new_rank = 2;
+        if($perm == "allow"){
+            $userinsert = $handle->prepare("INSERT INTO user_ranks (username, rank_id, node) VALUES(:username, :rank_id, :node)");
+            $userinsert->execute(["username" => $username, "rank_id" => 2, "node" => "B"]);
+            $new_rank = 2;
+            rank_audit($changer, $change_type, $change_slachtoffer, $rank_id, $new_rank,$reason, $change_date);
+            header("Refresh:0");
+        }
+        #PDNEX
+        else{
+            ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action. <br> Error code: PDNEX", "error"); </script> <?php
+        }
+        
+    }
+    #PEX
+    elseif($perm == "allow"){
+        $new_rank_id = $rank_id + 1;
+        $new_rank = $new_rank_id;
+        $old_rank = $rank_id;
+        $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
+        $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
         rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank,$reason, $change_date);
         header("Refresh:0");
     }
 
     else{
-        if($rank_id < 6){
-            $new_rank_id = $rank_id + 1;
-            $new_rank = $new_rank_id;
-            $old_rank = $rank_id;
-            $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
-            $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
-            rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank,$reason, $change_date);
-            header("Refresh:0");
-        }
-        else{
-            ?>
-            <script>
-                alert("U kan geen promotie meer geven!");
-                </script>
-            <?php
-        }
+        ?>
+        <script>
+            swal("No permission", "You don't have the appropriate permissions to complete this action. <br> Error code: PEX", "error");
+            </script>
+        <?php
     }
+
 }
 
 if(isset($_POST["demote"])){
@@ -126,27 +154,34 @@ if(isset($_POST["demote"])){
     $change_slachtoffer = $username;
     $change_type = "Degradatie";
     $changer = $usernamea;
+    $perm = get_perm($perm_id, $change_type, $rank_id);
     if($user == "DNEX"){
         ?>
             <script>
-                alert("Deze gebruiker kan geen degradatie ontvangen!");
+                swal("Error", "Deze gebruiker kan geen degradatie ontvangen!", "error");
             </script>
             <?php
     }
-
+    #DEX
     else{
         if($rank_id > 1){
-            $old_rank = $rank_id;
-            $new_rank_id = $rank_id - 1;
-            $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
-            $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
-            rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank_id,$reason, $change_date);
-            header("Refresh:0");
+            if($perm == "allow"){
+                $old_rank = $rank_id;
+                $new_rank_id = $rank_id - 1;
+                $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
+                $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
+                rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank_id,$reason, $change_date);
+                header("Refresh:0");
+            }
+            else{
+                ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action. <br> Error code: DEX", "error"); </script> <?php
+            }
+            
         }
         else{
             ?>
             <script>
-                alert("U kan geen degradatie meer geven!");
+                swal("Error", "Deze gebruiker kan geen degradatie ontvangen!", "error");
                 </script>
             <?php
         }
@@ -160,19 +195,23 @@ if(isset($_POST["ontslag"])){
     $change_slachtoffer = $username;
     $change_type = "Ontslag";
     $changer = $usernamea;
+    $perm = get_perm($perm_id, $change_type, $rank_id);
     if($user == "DNEX"){
         ?>
             <script>
-                alert("Deze gebruiker kan geen ontslag ontvangen!");
+                swal("Error", "Deze gebruiker kan geen ontslag ontvangen! Error code: ONTDNEX", "error");
                 </script>
             <?php
     }
-    else{
+    if($perm == "allow"){
         $old_rank = $rank_id;
         $userpromote = $handle->prepare("DELETE FROM user_ranks WHERE username = :username");
         $userpromote->execute(["username" => $username]);
         rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, 0,$reason, $change_date);
         header("Refresh:0");
+    }
+    else{
+        ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action. <br> Error code: ONTEX", "error"); </script> <?php
     }
 }
 
@@ -183,21 +222,6 @@ if(isset($_POST["custom"])){
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>CakeRankings - Staff</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">    
-    <link rel="stylesheet" type="text/css" href="style/main.css"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-</head> 
-
-<body>
     <div class="name">
     <a href="home.php"> Home </a>
     <?php echo "<p id='a'> $bericht </p>" ?>
@@ -433,5 +457,8 @@ if(!isset($_POST["showoption"])){
 </div>
 <p style="color: white; text-align: center;">Made with ♥ by Mohamed | <a href="https://github.com/Mohagames205/flowpanel">FlowPanel</a> version 1.2 PreRelease </p>
 </main>
+
+
 </body>
+
 </html>
