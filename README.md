@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/Mohagames205/flowpanel.svg?branch=master)](https://travis-ci.org/Mohagames205/flowpanel)
 
 # FlowPanel
 ### Rank management made easy
