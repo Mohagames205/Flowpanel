@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/Mohagames205/flowpanel.svg?branch=master)](https://travis-ci.org/Mohagames205/flowpanel)
 
 # FlowPanel
 ### Rank management made easy
@@ -16,5 +16,3 @@
 ### How to install?
 Coming soon, stay tuned!
 
-
-![Logo](https://github.com/Mohagames205/flowpanel/blob/master/foto/jhbi.png)
