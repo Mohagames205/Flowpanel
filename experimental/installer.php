@@ -18,7 +18,7 @@
         $database = array("dbhost" => $dbhost, "username" => $username, "password" => $password, "dbname" => $dbname, "installer" => false);
         $database_json = json_encode($database);
         echo $database_json;
-        $fp = fopen('config/database.json', 'w');
+        $fp = fopen('../config/database.json', 'w');
         fwrite($fp, $database_json);
         fclose($fp);
     }
