@@ -41,14 +41,36 @@ if(isset($_POST["login"])){
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Inlog pagina om toegang te krijgen tot het staffpaneel">
-
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
     <title>CakeRanking</title>
 
     <!-- Custom styles for this template -->
     <link href="style/login.css" rel="stylesheet">
-  </head>
+    <style>
+.no-js #loader { display: none;  }
+.js #loader { display: block; position: absolute; left: 100px; top: 0; }
+.se-pre-con {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	background: url(/cr/loader.gif) center no-repeat #fff;
+}
+</style>
+<script>
+$(window).load(function() {
+		// Animate loader off screen
+		$(".se-pre-con").fadeOut("slow");;
+	});
+</script>
+</head> 
 
 <body>
+
+<div class="se-pre-con"></div>
 <div class="wrapper fadeInDown">
   <div id="formContent">
     <!-- Tabs Titles -->
