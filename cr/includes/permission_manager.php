@@ -50,6 +50,16 @@ function get_perm($perm_id, $change_type, $rank_id){
             return $perm;
         }
     }
+    if($change_type == "Custom"){
+        if($perm_id >= 4){
+            return "allow";
+
+        }
+        else{
+            return "deny";
+            
+        }
+    }
 
     
 
