@@ -239,9 +239,16 @@ if(isset($_POST["ontslag"])){
 }
 
 if(isset($_POST["custom"])){
-    $_SESSION["custom"] = $username;
-    $_SESSION["reason"] = htmlspecialchars($_POST["reason"]);
-    header("location:custom.php");
+    $perm = get_perm($perm_id, "custom", $rank_id);
+    if($perm == "allow"){
+        $_SESSION["custom"] = $username;
+        $_SESSION["reason"] = htmlspecialchars($_POST["reason"]);
+        header("location:custom.php");
+    }
+    else{
+        ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action. \nError code: CUSTEX", "error"); </script> <?php
+    }
+    
 }
 ?>
 

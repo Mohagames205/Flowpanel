@@ -2,16 +2,29 @@
 session_start();
 include("../connect.php");
 include("includes/audit.inc.php");
+include("includes/permission_manager.php");
 
 if(isset($_SESSION["custom"])){
     $usernamea = htmlspecialchars($_SESSION["username"]);
     $bericht = "Welkom $usernamea";
     $username = htmlspecialchars($_SESSION["custom"]);
     $naam = $username;
+    $get_perm_id = $handle->prepare("SELECT perm_id FROM users WHERE username = :username");
+    $get_perm_id->execute(["username" => $usernamea]);
+    $perm_id = $get_perm_id->fetch(PDO::FETCH_ASSOC);
+    $perm_id = $perm_id["perm_id"];
     $usernamequery = $handle->prepare("SELECT username FROM user_ranks WHERE username = :naam");
     $us = $usernamequery->execute(["naam" => $naam]);
     $username = $usernamequery->fetch(PDO::FETCH_ASSOC);
-    
+    $get_perm_id = $handle->prepare("SELECT perm_id FROM users WHERE username = :username");
+    $get_perm_id->execute(["username" => $usernamea]);
+    $perm_id = $get_perm_id->fetch(PDO::FETCH_ASSOC);
+    $perm_id = $perm_id["perm_id"];
+    $perm = get_perm($perm_id, "custom", $perm_id);
+    if($perm != "allow"){
+        die();
+        header("location:../index.php");
+    }
     if(!empty($username)){
         $user = "EX";
         $username = $username["username"];
