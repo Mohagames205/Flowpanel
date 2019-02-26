@@ -478,7 +478,7 @@ if(!isset($_POST["showoption"])){
 }
 ?>
 </div>
-<p style="color: white; text-align: center;">Made with ♥ by Mohamed | <a href="https://github.com/Mohagames205/flowpanel">FlowPanel</a> version 1.2 PreRelease </p>
+<p style="color: white; text-align: center;">Made with ♥ by Mohamed | <a href="https://github.com/Mohagames205/flowpanel">FlowPanel</a> version 2.0.0 Alpha</p>
 </main>
 
 
