@@ -8,10 +8,6 @@
 * You can change the rank of a user in one click!
 * You see a log of every rank change
 
- ### Coming soon
-- [ ] Permission setup
-- [ ]  Installer (almost done)
-
 ### How to install?
 * Put the files in your hosting folder (preferably your root folder)
 * Then you will need to create a new database, we only support MySQLi
