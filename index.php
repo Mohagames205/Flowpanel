@@ -24,7 +24,7 @@ else{
           $statement = $handle->prepare("SELECT * FROM users WHERE username = :username");
           $statement->execute(["username" => $username]);
           $logingeg = $statement->fetch(PDO::FETCH_ASSOC);
-              $count = $statement->rowCount();
+            $count = $statement->rowCount();
               if ($count > 0){
                   $password = htmlspecialchars($_POST["password"]);
                   if(password_verify($password, $logingeg["password"])){
@@ -44,8 +44,8 @@ else{
               else{
                   $tag = "De gebruiker bestaat niet.";
               }
-              }
       }
+  }
   ?>
   
   <!doctype html>
