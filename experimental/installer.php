@@ -24,20 +24,33 @@
         $password = htmlspecialchars($_POST["password"]);
         $dbname = htmlspecialchars($_POST["dbname"]);
 
-        $behaviourdata["installer"] = "disable";
-        $behaviourdata["path"] = $path;
+        try {
+            $conn = new PDO("mysql:host=$dbhost;dbname=$dbname", $username, $password);
+            // set the PDO error mode to exception
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            echo "Connected successfully"; 
+            $conn = null;
+            $behaviourdata["installer"] = "disable";
+            $behaviourdata["path"] = $path;
 
-        $behaviour = json_encode($behaviourdata, JSON_PRETTY_PRINT);
-        file_put_contents('../config/behaviour.json', $behaviour);
+            $behaviour = json_encode($behaviourdata, JSON_PRETTY_PRINT);
+            file_put_contents('../config/behaviour.json', $behaviour);
+            
+            $database = array("dbhost" => $dbhost, "username" => $username, "password" => $password, "dbname" => $dbname);
+            $database_json = json_encode($database);
+            echo $database_json;
+            $fp = fopen('../config/database.json', 'w');
+            fwrite($fp, $database_json);
+            fclose($fp);
+            header("LOCATION:/");
+            die();
+            }
+        catch(PDOException $e)
+            {
+            echo "<b>Connection failed: </b>" . $e->getMessage();
+            }
+
         
-        $database = array("dbhost" => $dbhost, "username" => $username, "password" => $password, "dbname" => $dbname);
-        $database_json = json_encode($database);
-        echo $database_json;
-        $fp = fopen('../config/database.json', 'w');
-        fwrite($fp, $database_json);
-        fclose($fp);
-        header("LOCATION:/");
-        die();
     }
 
      ?>
