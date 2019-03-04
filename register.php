@@ -26,7 +26,7 @@ else{
       if($password != $cpassword){
           $tag = "De 2 wachtwoorden zijn niet hetzelfde!";
       }
-      elseif($count < 0){
+      elseif($count <= 0){
           $hashed_pw = password_hash($password, PASSWORD_DEFAULT);
           $register_query = $handle->prepare("INSERT INTO users (user_id, username, password, perm_id) values(user_id, :username, :password, perm_id)");
           $register_query->execute(["username" => $username, "password" => $hashed_pw]);
