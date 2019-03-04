@@ -18,14 +18,23 @@ else{
       $username = htmlspecialchars($_POST["username"]);
       $password = htmlspecialchars($_POST["password"]);
       $cpassword = htmlspecialchars($_POST["cpassword"]);
-      
+      $username = htmlspecialchars($_POST["username"]);
+      $statement = $handle->prepare("SELECT * FROM users WHERE username = :username");
+      $statement->execute(["username" => $username]);
+      $count = $statement->rowCount();
+
       if($password != $cpassword){
           $tag = "De 2 wachtwoorden zijn niet hetzelfde!";
       }
-      else{
+      elseif($count < 0){
           $hashed_pw = password_hash($password, PASSWORD_DEFAULT);
           $register_query = $handle->prepare("INSERT INTO users (user_id, username, password, perm_id) values(user_id, :username, :password, perm_id)");
           $register_query->execute(["username" => $username, "password" => $hashed_pw]);
+          header("location:index.php");
+          die();
+      }
+      else{
+        $tag = "De gebruiker bestaat al!";
       }
   }
   

@@ -20,9 +20,8 @@ else{
           $tag = "Alle velden invullen!";
       }
       else{
-          $username = htmlspecialchars($username);
-          $query = "SELECT * FROM users WHERE username = :username";
-          $statement = $handle->prepare($query);
+          $username = htmlspecialchars($_POST["username"]);
+          $statement = $handle->prepare("SELECT * FROM users WHERE username = :username");
           $statement->execute(["username" => $username]);
           $logingeg = $statement->fetch(PDO::FETCH_ASSOC);
               $count = $statement->rowCount();
@@ -107,10 +106,11 @@ else{
         <input type="text" name="username" id="login" class="fadeIn second"  placeholder="login">
         <input type="password" name="password" id="password" class="fadeIn third" placeholder="password">
         <input type="submit" class="fadeIn fourth" value="Log In" name="login">
+        <p> Nog geen account? Klik <a href="register.php">hier</a> om eentje aan te maken!</p>
       </form>
-  
       <!-- Remind Passowrd -->
       <div id="formFooter">
+          
         <p class="underlineHover"> © Flowpanel 2018-2019 </p>
       </div>
   
