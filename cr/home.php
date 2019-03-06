@@ -25,7 +25,7 @@
 	width: 100%;
 	height: 100%;
 	z-index: 9999;
-	background: url(loader.gif) center no-repeat #fff;
+	background: url("../foto/loader.gif") center no-repeat #fff;
 }
 </style>
 <script>
