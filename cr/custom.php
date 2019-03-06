@@ -5,21 +5,36 @@ include("includes/audit.inc.php");
 include("includes/permission_manager.php");
 
 if(isset($_SESSION["custom"])){
+    //ranklijst ophalen
+    $rank_list_query = $handle->prepare("SELECT * FROM ranks");
+    $rank_list_query->execute();
+
+    //min en max van rank_id bepalen
+    $rank_minmax = $handle->prepare("SELECT 
+    (SELECT rank_id FROM ranks ORDER BY rank_id LIMIT 1) as 'first',
+    (SELECT rank_id FROM ranks ORDER BY rank_id DESC LIMIT 1) as 'last'");
+    $rank_minmax->execute();
+    $rank_minmax = $rank_minmax->fetch(PDO::FETCH_ASSOC);
+    $r_min = $rank_minmax["first"];
+    $r_max = $rank_minmax["last"];
+
+
+    //username uit session halen
     $usernamea = htmlspecialchars($_SESSION["username"]);
     $bericht = "Welkom $usernamea";
+    //het slachtoffer ophalen
     $username = htmlspecialchars($_SESSION["custom"]);
     $naam = $username;
+    //perm_id van de user ophalen
     $get_perm_id = $handle->prepare("SELECT perm_id FROM users WHERE username = :username");
     $get_perm_id->execute(["username" => $usernamea]);
     $perm_id = $get_perm_id->fetch(PDO::FETCH_ASSOC);
     $perm_id = $perm_id["perm_id"];
+    //zoeken naar de user in de database
     $usernamequery = $handle->prepare("SELECT username FROM user_ranks WHERE username = :naam");
     $us = $usernamequery->execute(["naam" => $naam]);
     $username = $usernamequery->fetch(PDO::FETCH_ASSOC);
-    $get_perm_id = $handle->prepare("SELECT perm_id FROM users WHERE username = :username");
-    $get_perm_id->execute(["username" => $usernamea]);
-    $perm_id = $get_perm_id->fetch(PDO::FETCH_ASSOC);
-    $perm_id = $perm_id["perm_id"];
+    //checken als de gebruiker toestemming heeft
     $perm = get_perm($perm_id, "custom", $perm_id);
     if($perm != "allow"){
         die();
@@ -49,18 +64,18 @@ if(isset($_POST["logout"])){
 
 
 if(isset($_POST["nieuwe_rank"])){
-    $allowed_ranks = array(0, 1, 2, 3, 4, 5, 6);
+
     $nieuwe_rank = htmlspecialchars($_POST["nieuwe_rank"]);
-    if(in_array($nieuwe_rank, $allowed_ranks)){
+    if(($r_min <= $nieuwe_rank) && ($nieuwe_rank <= $r_max)){
         $reason = htmlspecialchars($_SESSION["reason"]);
         $change_date = date('d/m/Y');
         $change_type = "Custom";
         if($user == "DNEX"){
             $old_rank = 1;
+            $nieuwe_rank = htmlspecialchars($_POST["nieuwe_rank"]);
             $userinsert = $handle->prepare("INSERT INTO user_ranks (username, rank_id, node) VALUES(:username, :rank_id, :node)");
-            $userinsert->execute(["username" => $username, "rank_id" => $_POST["nieuwe_rank"], "node" => "B"]);
-            $new_rank = $_POST["nieuwe_rank"];
-            rank_audit($usernamea, $change_type, $username, $old_rank, $new_rank,$reason, $change_date);
+            $userinsert->execute(["username" => $username, "rank_id" => $nieuwe_rank, "node" => "B"]);
+            rank_audit($usernamea, $change_type, $username, $old_rank, $nieuwe_rank,$reason, $change_date);
             unset($_SESSION['custom']);
             unset($_SESSION['reason']);
             header("LOCATION:home.php?naam=$username");
@@ -80,7 +95,7 @@ if(isset($_POST["nieuwe_rank"])){
     }
     else{
         ?>
-        <script> alert("U kan deze persoon geen Owner maken!"); </script>
+        <script> alert("Deze rank bestaat niet!"); </script>
         <?php
     }
     
@@ -129,13 +144,14 @@ if(isset($_POST["nieuwe_rank"])){
 </table>
 <form method="POST">
     <select name="nieuwe_rank" class="custom_select">
-    <option value="0">Ontslagen</option>
-    <option value="1">Guest</option>
-    <option value="2">Helper</option>
-    <option value="3">Moderator</option>
-    <option value="4">Developer</option>
-    <option value="5">Administrator</option>
-    <option value="6">CoOwner</option>
+    <?php
+    foreach($rank_list_query as $rank_data){
+        $rank_name = $rank_data["rank_name"];
+        $rank_l_id = $rank_data["rank_id"];
+        echo "<option value='$rank_l_id'>$rank_name</option>";
+    }
+    ?>
+
     </select>
     <br>
     <button type="submit">Wijzigen</button>
