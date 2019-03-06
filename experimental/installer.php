@@ -5,10 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>FlowPanel - Installer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css">
 </head>
 <body>
     <?php
+    require_once("query.php");
     $behaviour_json = file_get_contents('../config/behaviour.json');
     $behaviourdata = json_decode($behaviour_json, true);
     $state = $behaviourdata["installer"];
@@ -22,13 +22,39 @@
         $dbhost = htmlspecialchars($_POST["dbhost"]);
         $username = htmlspecialchars($_POST["username"]);
         $password = htmlspecialchars($_POST["password"]);
-        $dbname = htmlspecialchars($_POST["dbname"]);
+        $dbname = $_POST["dbname"];
 
         try {
-            $conn = new PDO("mysql:host=$dbhost;dbname=$dbname", $username, $password);
-            // set the PDO error mode to exception
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            echo "Connected successfully"; 
+            
+            $dbpref = htmlspecialchars($_POST["dbpref"]);
+            if($dbpref == "y"){
+                $conn = new PDO("mysql:host=$dbhost;dbname=$dbname", $username, $password);
+                // set the PDO error mode to exception
+                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                echo "Connected successfully"; 
+            }
+            if($dbpref == "n"){
+                $conn = new PDO("mysql:host=$dbhost", $username, $password);
+                // set the PDO error mode to exception
+                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $conn->exec('CREATE DATABASE ' . $dbname);
+                $conn = null;
+
+                $conn = new PDO("mysql:host=$dbhost;dbname=$dbname", $username, $password);
+                // set the PDO error mode to exception
+                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                
+                $conn->exec($querydb);
+
+                $conn = null;
+            }
+
+            else{
+                echo "Er is iets misgelopen";
+            }
+
+
+
             $conn = null;
             $behaviourdata["installer"] = "disable";
             $behaviourdata["path"] = $path;
@@ -60,6 +86,10 @@
     <input type="text" name="username" placeholder="username" required><br><br>
     <input type="password" name="password" placeholder="password"><br><br>
     <input type="text" name="dbname" placeholder="Database name" required><br><br>
+    <hr>
+    <input type="radio" name="dbpref" value="y" required>Mijn database is al ingesteld<br>
+    <input type="radio" name="dbpref" value="n" required>Mijn database is nog <b>niet</b> ingesteld<br><br>
+    <hr>
     <button type="submit" name="dbform">Submit</button>
     </form>
 
