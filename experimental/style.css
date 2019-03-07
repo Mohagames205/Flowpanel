@@ -1,0 +1,32 @@
+.title{
+    
+    color: #e5e5e5;
+    text-shadow: 2px 2px #240907;
+    background: #bdc3c7; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #bdc3c7, #5a6168); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #bdc3c7, #5a6168); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+h1{
+    margin: 0px;
+    padding: 20px;
+}
+
+body{
+    font-family: arial;
+    margin: 0px;
+}
+
+
+main{
+    margin: 20px;
+}
+
+button{
+    padding: 10px;
+}
+
+input{
+    padding: 7px;
+}
