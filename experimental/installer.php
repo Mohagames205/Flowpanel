@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>FlowPanel - Installer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <?php
@@ -31,7 +32,8 @@
                 $conn = new PDO("mysql:host=$dbhost;dbname=$dbname", $username, $password);
                 // set the PDO error mode to exception
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                echo "Connected successfully"; 
+                echo "Connected successfully";
+                $conn = null; 
             }
             if($dbpref == "n"){
                 $conn = new PDO("mysql:host=$dbhost", $username, $password);
@@ -89,11 +91,17 @@
     }
 
      ?>
+     <div class="title">
      <h1>Flowpanel installer </h1>
      <hr>
-     <h2>Gelieve alle instructies te volgen, anders zal het systeem niet naar behoren functioneren.</h2>
+     </div>
+     
+     <main>
+     <h2> Database instellingen </h2>
      <hr>
-     <h3>Gelieve een database aan te maken, daarna vul je de velden hieronder in met de juiste informatie</h3>
+     <h3>Databaseinfo:</h3>
+     <p>Gelieve een database aan te maken voor Flowpanel.</p>
+     <br>
     <form method="POST" name="databaseform">
     <input type="text" name="dbhost" placeholder="Database Host" required><br><br>
     <input type="text" name="username" placeholder="username" required><br><br>
@@ -102,11 +110,11 @@
     <hr>
     <h3>Database tabellen</h3>
     <input type="radio" name="dbpref" value="y" required>Mijn tabellen zijn al aangemaakt<br>
-    <input type="radio" name="dbpref" value="tbl" required>Mijn tabellen zijn nog <b>niet</b> aangemaakt.<br>
-    <input type="radio" name="dbpref" value="n" required>Mijn database is nog <b>niet</b> aangemaakt (deze optie werkt mogelijk niet)<br><br>
+    <input type="radio" name="dbpref" value="tbl" required>Mijn tabellen zijn nog <b>niet</b> aangemaakt (deze optie is aanbevolen).<br>
+    <input type="radio" name="dbpref" value="n" required>Mijn database is nog <b>niet</b> aangemaakt (deze optie werkt mogelijk niet).<br><br>
     <hr>
-    <button type="submit" name="dbform">Submit</button>
+    <button type="submit" name="dbform">Opslaan</button>
     </form>
-
+</main>
 </body>
 </html>
