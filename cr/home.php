@@ -84,7 +84,7 @@ if(isset($_GET["naam"])){
         $node = $userdata["node"];
         #changes en warns ophalen
         #audit
-        $get_scope_audit = $handle->prepare("SELECT * FROM audit_log WHERE change_slachtoffer = :username");
+        $get_scope_audit = $handle->prepare("SELECT * FROM audit_log WHERE change_slachtoffer = :username ORDER BY audit_id DESC");
         $get_scope_audit->execute(["username" => $username]);
         #warns
         $get_scope_warns = $handle->prepare("SELECT * FROM warns WHERE gewaarschuwde = :username");
@@ -115,9 +115,9 @@ if(isset($_GET["naam"])){
 
 else{
     $page = 0;
-    $get_personal_audit = $handle->prepare("SELECT * FROM audit_log WHERE changer = :usernamea");
+    $get_personal_audit = $handle->prepare("SELECT * FROM audit_log WHERE changer = :usernamea ORDER BY audit_id DESC");
     $get_personal_audit->execute(["usernamea" => $usernamea]);
-    $get_global_audit = $handle->query("SELECT * FROM audit_log");
+    $get_global_audit = $handle->query("SELECT * FROM audit_log ORDER BY audit_id DESC");
 
     
 }
