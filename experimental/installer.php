@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>FlowPanel - Installer</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -19,7 +22,7 @@
     }
 
     if(isset($_POST["dbform"])){
-        $path = "soon";
+        $path = $_POST["path"];
         $dbhost = htmlspecialchars($_POST["dbhost"]);
         $username = htmlspecialchars($_POST["username"]);
         $password = htmlspecialchars($_POST["password"]);
@@ -65,7 +68,7 @@
             }
 
 
-
+            $tag = null;
             $conn = null;
             $behaviourdata["installer"] = "disable";
             $behaviourdata["path"] = $path;
@@ -84,7 +87,7 @@
             }
         catch(PDOException $e)
             {
-            echo "<b>Connection failed: </b>" . $e->getMessage();
+            $tag = "<b>Connection failed: </b>" . $e->getMessage();
             }
 
         
@@ -99,6 +102,14 @@
      <main>
      <h2> Database instellingen </h2>
      <hr>
+     <?php if(!empty($tag)){
+         ?>
+        <div class="alert alert-danger">
+        <?php echo $tag; ?> 
+        </div>
+         <?php
+     }
+     ?>
      <h3>Databaseinfo:</h3>
      <p>Gelieve een database aan te maken voor Flowpanel.</p>
      <br>
@@ -107,6 +118,10 @@
     <input type="text" name="username" placeholder="username" required><br><br>
     <input type="password" name="password" placeholder="password"><br><br>
     <input type="text" name="dbname" placeholder="Database name" required><br><br>
+    <hr>
+    <h3>Installatie locatie</h3>
+    <p>Hier vul je in waar je de flowpanel files hebt gestoken. Vb: <i>localhost/panel, localhost, mysite.com/panel</i><br>Het is aangeraden om de files in de root webfolder te steken.</p>
+    <input type="text" name="path" placeholder="Installatielocatie" required>
     <hr>
     <h3>Database tabellen</h3>
     <input type="radio" name="dbpref" value="y" required>Mijn tabellen zijn al aangemaakt<br>

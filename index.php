@@ -98,6 +98,7 @@ else{
               <?php 
           if(!isset($tag)){
               $tag = NULL;
+              
           }
           echo "<p style='color: red'>$tag </p>"; ?>
   

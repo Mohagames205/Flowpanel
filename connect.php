@@ -1,6 +1,11 @@
 <?php
-
-$database_json = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/config/database.json");
+$path = realpath("../index.php");
+if($path == false){
+    $path = realpath("index.php");
+}
+$path2 = dirname($path);
+ 
+$database_json = file_get_contents($path2 . "\config\database.json");
 $database = json_decode($database_json, true);
 $dbhost = $database["dbhost"];
 $username = $database["username"];
