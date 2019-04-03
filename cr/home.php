@@ -14,6 +14,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!-- alertify -->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.11.2/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.2/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.2/build/css/themes/default.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.2/build/css/themes/semantic.min.css"/>
     <link rel="stylesheet" type="text/css" href="style/main.css"/>
     <style>
 .no-js #loader { display: none;  }
@@ -46,6 +51,8 @@ include("includes/audit.inc.php");
 include("includes/rank_id.inc.php");
 include("includes/color.inc.php");
 include("includes/permission_manager.php");
+include("includes/audit_table.inc.php");
+include("includes/getAudit.inc.php");
 
 if(isset($_SESSION["username"])){
     $usernamea = $_SESSION["username"];
@@ -82,50 +89,44 @@ if(isset($_GET["naam"])){
         $rank_id = $userdata["rank_id"];
         $rank = get_rank_name($rank_id);
         $node = $userdata["node"];
-        #changes en warns ophalen
-        #audit
-        $get_scope_audit = $handle->prepare("SELECT * FROM audit_log WHERE change_slachtoffer = :username ORDER BY audit_id DESC");
-        $get_scope_audit->execute(["username" => $username]);
-        #warns
+        #warns ophalen
         $get_scope_warns = $handle->prepare("SELECT * FROM warns WHERE gewaarschuwde = :username");
         $get_scope_warns->execute(["username" => $username]);
 
         #node system
-        if(strtolower($node) == "c"){
-            $node = "CakeCraft Quest";
-        }
-        if(strtolower($node) == "h"){
-            $node = "CakeCraft Hub";
-        }
-        if(strtolower($node) == "b"){
-            $node = "Global";
-        }
+        $node = "soon";
         
     }
     else{
         $username = $naam;
-        $rank = "Guest";
-        $node = "De gebruiker staat niet in onze database";
+        $rank = "Niet werkzaam";
+        $node = "De gebruiker bestaat niet.";
         $user = "DNEX";
-        $rank_id = 1;
+        $rank_id = 0;
     }
-
-
 }
 
 else{
     $page = 0;
-    $get_personal_audit = $handle->prepare("SELECT * FROM audit_log WHERE changer = :usernamea ORDER BY audit_id DESC");
-    $get_personal_audit->execute(["usernamea" => $usernamea]);
-    $get_global_audit = $handle->query("SELECT * FROM audit_log ORDER BY audit_id DESC");
-
-    
 }
+
 if(isset($_POST["warn"])){
     $_SESSION["warned"] = htmlspecialchars($_POST["warn"]);
     $_SESSION["warner"] = $usernamea;
     header("location:includes/warn.php");
 
+}
+if(isset($_POST["del"])){
+    $audit_id = $_POST["del"];
+    $audit_data = getAuditdata($audit_id);
+    $change_slachtoffer = $audit_data["change_slachtoffer"];
+    $rank_id = $audit_data["old_rank_id"];
+    $rewriteRank = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
+    $rewriteRank->execute(["rank_id" => $rank_id, "username" => $change_slachtoffer]);
+    $delAudit = $handle->prepare("DELETE FROM audit_log WHERE audit_id = :audit_id");
+    $delAudit->execute(["audit_id" => $audit_id]);
+    ?> <script> alertify.success('Promotie is ongedaan gemaakt!'); </script><?php
+    header("Refresh:2");
 }
 
 if(isset($_POST["promote"])){
@@ -146,7 +147,7 @@ if(isset($_POST["promote"])){
         }
         #PDNEX
         else{
-            ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action. <br> Error code: PDNEX", "error"); </script> <?php
+            ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script> <?php
         }
         
     }
@@ -164,7 +165,7 @@ if(isset($_POST["promote"])){
     else{
         ?>
         <script>
-            swal("No permission", "You don't have the appropriate permissions to complete this action. <br> Error code: PEX", "error");
+            swal("No permission", "You don't have the appropriate permissions to complete this action.", "error");
             </script>
         <?php
     }
@@ -197,7 +198,7 @@ if(isset($_POST["demote"])){
                 header("Refresh:0");
             }
             else{
-                ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action. <br> Error code: DEX", "error"); </script> <?php
+                ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script> <?php
             }
             
         }
@@ -222,7 +223,7 @@ if(isset($_POST["ontslag"])){
     if($user == "DNEX"){
         ?>
             <script>
-                swal("Error", "Deze gebruiker kan geen ontslag ontvangen! Error code: ONTDNEX", "error");
+                swal("Error", "Deze gebruiker kan geen ontslag ontvangen!", "error");
                 </script>
             <?php
     }
@@ -234,7 +235,7 @@ if(isset($_POST["ontslag"])){
         header("Refresh:0");
     }
     else{
-        ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action. <br> Error code: ONTEX", "error"); </script> <?php
+        ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script> <?php
     }
 }
 
@@ -246,39 +247,41 @@ if(isset($_POST["custom"])){
         header("location:custom.php");
     }
     else{
-        ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action. \nError code: CUSTEX", "error"); </script> <?php
+        ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script> <?php
     }
     
 }
 ?>
 
     <div class="name">
-    <a href="home.php"> Home </a>
+    <a href="home.php">⌂ Home </a>
     <?php echo "<p id='a'> $bericht </p>" ?>
     <form method="POST">
         <button name="logout" class="btn btn-outline-light">Uitloggen</button>
-        <a role="button" class="btn btn-outline-light" href="../paneel">Sollicitaties</a>
+        <a role="button" class="btn btn-outline-light" href="profile.php">Profiel</a>
     </form>
 </div>
 
-<?php if($page == 0){
-    $count = $get_personal_audit->rowCount();
-    ?>
-    <div class='search'>
+
+<?php 
+#start van Page 0
+if($page == 0){
+?>
+<div class='search'>
     <form method='GET'>
-    
     <p><b>Username</b></p>
     <input type='text' name='naam' id='name' placeholder='Username'>
-
-</form>
+    </form>
 </div>
+<div class="claimsysteem">
+<p>soon</p>
 
-<?php if($count > 0){
-
-?>
+</div> <!-- einde claimsys div -->
+<div class="tablebox">
 <table class="table table-striped table-dark table-bordered table-hover">
+<thead>
 <tr>
-<th colspan="4" class="nametable"> 
+<th colspan="5" class="nametable"> 
 <form method="GET" id="option">
     <select id="select" placeholder="optie" name="queryoption" onchange='if(this.value != 0) { this.form.submit(); }'>
         <option>Keuze</option>
@@ -286,68 +289,34 @@ if(isset($_POST["custom"])){
         <option value="personal">Personal</option>
     </select>
 </form>
-
-
- </th></tr>
-
-
-<th>User</th>
-<th>Wijziging</th>
-<th>Reden</th>
-<th>Soort</th>
+</th>
+</tr>
 
 <?php
-
 if(isset($_GET["queryoption"])){
     $qo = htmlspecialchars($_GET["queryoption"]);
-}
-if(!isset($_GET["queryoption"])){
-    $qo = "personal";
-}
-if($qo == "personal"){
-    foreach($get_personal_audit as $personal_audit){
-        $changer = $personal_audit["changer"];
-        $oude_rank = $personal_audit["old_rank_id"];
-        $nieuwe_rank = $personal_audit["new_rank_id"];
-        $change_type = $personal_audit["change_type"];
-        $slachtoffer = $personal_audit["change_slachtoffer"]; 
-        $reason = $personal_audit["reason"];
-        $oude_rank = get_rank_name($oude_rank);
-        $nieuwe_rank = get_rank_name($nieuwe_rank);
-        $tstat = get_color($change_type);
-        echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
-        <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
-        <td>$reason</td>
-        <td bgcolor='$tstat'>$change_type</td></tr>";
-         
-    }
-    
-}
-
-if($qo == "global"){
-    foreach($get_global_audit as $global_audit){
-        $changer = $global_audit["changer"];
-        $oude_rank = $global_audit["old_rank_id"];
-        $nieuwe_rank = $global_audit["new_rank_id"];
-        $change_type = $global_audit["change_type"];
-        $reason = $global_audit["reason"];
-        $slachtoffer = $global_audit["change_slachtoffer"]; 
-        $oude_rank = get_rank_name($oude_rank);
-        $nieuwe_rank = get_rank_name($nieuwe_rank);
-        $tstat = get_color($change_type);
-        echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
-        <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
-        <td>$reason</td>
-        <td bgcolor='$tstat'>$change_type</td></tr>";
-         
+    switch($qo){
+        case "personal":
+            echo getAudit("personal");
+            break;
+        case "global":
+            echo getAudit("global");
+            break;
+        default:
+            echo getAudit("personal");
+            break;
     }
 }
-
+else{
+    echo getAudit("personal");
 }
-}
+} 
+?>
+</table>
 
+<?php
 if($page == 1){
-    ?>
+?>
 <div class="onderkant">  
 <div class="profile">
 
@@ -356,7 +325,7 @@ if($page == 1){
     <th colspan="3" class="nametable"> <?php echo $username ?></th>
     <tr>
     <th scope="row">Rank</th>
-    <th scope="row">Server</th>
+    <th scope="row">Afdeling</th>
     <?php if($user == "EX"){ ?>
     <th scope="row">Warn</th>
     <?php } ?>
@@ -406,11 +375,8 @@ if($user == "EX"){
     <br>
 <div class='search'>
     <form method='GET'>
-    
     <p><b>Username</b></p>
     <input type='text' name='naam' id='name' placeholder='Username'>
-
-
 </div>
 </form>
 
@@ -425,9 +391,10 @@ if(!isset($_POST["showoption"])){
 }
 
 ?>
+<div class="tablebox">
 <table class="table table-striped table-dark table-bordered table-hover">
 <tr>
-<th colspan="4" class="nametable"> 
+<th colspan="5" class="nametable"> 
 <form method="POST" id="option">
     <select id="select" placeholder="optie" name="showoption" onchange='if(this.value != 0) { this.form.submit(); }'>
         <option value="changes">Keuze</option>
@@ -460,35 +427,17 @@ if(!isset($_POST["showoption"])){
         }
     }
     else{
-        foreach($get_scope_audit as $scope_audit){
-            $changer = $scope_audit["changer"];
-            $oude_rank = $scope_audit["old_rank_id"];
-            $nieuwe_rank = $scope_audit["new_rank_id"];
-            $change_type = $scope_audit["change_type"];
-            $reason = $scope_audit["reason"];
-            $slachtoffer = $scope_audit["change_slachtoffer"]; 
-            $oude_rank = get_rank_name($oude_rank);
-            $nieuwe_rank = get_rank_name($nieuwe_rank);
-            $tstat = get_color($change_type);
-            echo "<tr><td>$changer <b>&rarr;</b> $slachtoffer</td>
-            <td>$oude_rank <b>&rarr;</b> $nieuwe_rank</td>
-            <td>$reason</td>
-            <td bgcolor='$tstat'>$change_type</td></tr>";
-             
-        }
-       
+        echo getAudit("scope");
     }
 }
-
-
 #end of page 1
 }
 ?>
+</table>
+<!-- einde div van tablebox -->
+</div>
+</div>
 </div>
 <p style="color: white; text-align: center;">Made with ♥ by Mohamed | <a href="https://github.com/Mohagames205/flowpanel">FlowPanel</a> version 2.0.0 Alpha</p>
-</main>
-
-
 </body>
-
 </html>
