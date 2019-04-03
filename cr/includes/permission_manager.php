@@ -44,7 +44,7 @@ function get_perm($perm_id, $change_type, $rank_id){
         }
     break;
 
-    case "ontslag":
+    case "Ontslag":
         if($perm_id >= 4 AND $rank_id >= 2 AND $rank_id <= 6){
             $perm = "allow";
             return $perm;
