@@ -117,16 +117,23 @@ if(isset($_POST["warn"])){
 
 }
 if(isset($_POST["del"])){
-    $audit_id = $_POST["del"];
-    $audit_data = getAuditdata($audit_id);
-    $change_slachtoffer = $audit_data["change_slachtoffer"];
-    $rank_id = $audit_data["old_rank_id"];
-    $rewriteRank = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
-    $rewriteRank->execute(["rank_id" => $rank_id, "username" => $change_slachtoffer]);
-    $delAudit = $handle->prepare("DELETE FROM audit_log WHERE audit_id = :audit_id");
-    $delAudit->execute(["audit_id" => $audit_id]);
-    ?> <script> alertify.success('Promotie is ongedaan gemaakt!'); </script><?php
-    header("Refresh:2");
+    $perm = get_perm($perm_id, "delete", $rank_id);
+    if($perm == "allow"){
+        $audit_id = $_POST["del"];
+        $audit_data = getAuditdata($audit_id);
+        $change_slachtoffer = $audit_data["change_slachtoffer"];
+        $rank_id = $audit_data["old_rank_id"];
+        $rewriteRank = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
+        $rewriteRank->execute(["rank_id" => $rank_id, "username" => $change_slachtoffer]);
+        $delAudit = $handle->prepare("DELETE FROM audit_log WHERE audit_id = :audit_id");
+        $delAudit->execute(["audit_id" => $audit_id]);
+        ?> <script> alertify.success('Promotie is ongedaan gemaakt!'); </script><?php
+        header("Refresh:2");
+    }
+    else{
+        ?><script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script><?php
+    }
+    
 }
 
 if(isset($_POST["promote"])){

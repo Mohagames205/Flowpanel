@@ -4,7 +4,10 @@ function get_perm($perm_id, $change_type, $rank_id){
     #permissions voor promotie
     
     $demprowa = array(2, 3, 4);
-    if($change_type == "Promotie"){
+    switch($change_type){
+        
+    
+    case "Promotie":
         if($perm_id == 1){
             $perm = "deny";
             return $perm;
@@ -27,10 +30,10 @@ function get_perm($perm_id, $change_type, $rank_id){
             $perm = "deny";
             return $perm;
         }
-    }
+    break;
     #Permissions voor degra
     
-    if($change_type == "Degradatie"){
+    case "Degradatie":
         if($perm_id >= 3 AND $rank_id >= 3 AND $rank_id <= 6){
             $perm = "allow";
             return $perm;
@@ -39,8 +42,9 @@ function get_perm($perm_id, $change_type, $rank_id){
             $perm = "deny";
             return $perm;
         }
-    }
-    if($change_type == "Ontslag"){
+    break;
+
+    case "ontslag":
         if($perm_id >= 4 AND $rank_id >= 2 AND $rank_id <= 6){
             $perm = "allow";
             return $perm;
@@ -49,8 +53,9 @@ function get_perm($perm_id, $change_type, $rank_id){
             $perm = "deny";
             return $perm;
         }
-    }
-    if($change_type == "custom"){
+    break;
+
+    case "custom":
         if($perm_id >= 4){
             return "allow";
 
@@ -59,8 +64,15 @@ function get_perm($perm_id, $change_type, $rank_id){
             return "deny";
             
         }
-    }
+    break;
 
+    case "delete":
+        if($perm_id >= 5){
+            return "allow";
+        }
+        else{
+            return "deny";
+        }
     
-
+}
 }
