@@ -331,17 +331,18 @@ if($page == 1){
     <th colspan="3" class="nametable"> <?php echo $username ?></th>
     <tr>
     <th scope="row">Rank</th>
+    <?php if($user == "EX" AND $rank_id > 0){ ?>
     <th scope="row">Afdeling</th>
-    <?php if($user == "EX"){ ?>
     <th scope="row">Warn</th>
     <?php } ?>
 </tr>
 <tr>
 <td><?php echo $rank ?></td>
-<td><?php echo $node ?> </td>
 <?php 
-if($user == "EX"){
+if($user == "EX" AND $rank_id > 0 ){
     ?>
+<td><?php echo $node ?> </td>
+
 <td> <form method="POST"><button type="submit" name="warn" value="<?php echo $username ?>">Warn</button></form></td>
 <?php }
 ?>
@@ -352,7 +353,7 @@ if($user == "EX"){
 
 <form method="POST" name="change">
     <?php
-    if($user == "DNEX"){
+    if($user == "DNEX" OR $rank_id <= 0){
         ?>
         <div class="changers">
         <button name="promote" id="promote">Promoveren</button>
