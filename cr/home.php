@@ -1,74 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    
-    <title>CakeRankings - Staff</title>
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1">    
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js'></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-    <!-- alertify -->
-    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.11.2/build/alertify.min.js"></script>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.2/build/css/alertify.min.css"/>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.2/build/css/themes/default.min.css"/>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.2/build/css/themes/semantic.min.css"/>
-    <link rel="stylesheet" type="text/css" href="style/main.css"/>
-    <style>
-.no-js #loader { display: none;  }
-.js #loader { display: block; position: absolute; left: 100px; top: 0; }
-.se-pre-con {
-	position: fixed;
-	left: 0px;
-	top: 0px;
-	width: 100%;
-	height: 100%;
-	z-index: 9999;
-	background: url("../foto/loader.gif") center no-repeat #fff;
-}
-</style>
-<script>
-$(window).load(function() {
-		// Animate loader off screen
-		$(".se-pre-con").fadeOut("slow");;
-	});
-</script>
-</head> 
-
-<body>
-
-<div class="se-pre-con"></div>
 <?php
 session_start();
-include("../connect.php");
-include("includes/audit.inc.php");
-include("includes/rank_id.inc.php");
-include("includes/color.inc.php");
-include("includes/permission_manager.php");
-include("includes/audit_table.inc.php");
-include("includes/getAudit.inc.php");
-include("includes/lijsten.class.php");
 if(isset($_SESSION["username"])){
+    require("includes/header.inc.php");
     $lists = new Lists;
-    $usernamea = $_SESSION["username"];
-    $bericht = "Hey $usernamea!";
+    $zoekgebruiker = new User($usernamea);
     #Getting permission ID
-    $get_perm_id = $handle->prepare("SELECT perm_id FROM users WHERE username = :username");
-    $get_perm_id->execute(["username" => $usernamea]);
-    $perm_id = $get_perm_id->fetch(PDO::FETCH_ASSOC);
-    $perm_id = $perm_id["perm_id"];
+    $zoekgebruiker->getUserdata($usernamea);
+    $perm_id = $zoekgebruiker->perm_id;
+    
+    
 }
 
 else{
     header("location:../index.php");
 }
+
 
 
 
@@ -113,7 +59,7 @@ else{
 if(isset($_POST["warn"])){
     $_SESSION["warned"] = htmlspecialchars($_POST["warn"]);
     $_SESSION["warner"] = $usernamea;
-    header("location:includes/warn.php");
+    header("location:warn.php");
 
 }
 if(isset($_POST["del"])){
@@ -137,113 +83,16 @@ if(isset($_POST["del"])){
 }
 
 if(isset($_POST["promote"])){
-    $reason = htmlspecialchars($_POST["reason"]);
-    $change_date = date('d/m/Y');
-    $change_slachtoffer = $username;
-    $change_type = "Promotie";
-    $changer = $usernamea;
-    $perm = get_perm($perm_id, $change_type, $rank_id);
-    echo $perm;
-    if($user == "DNEX"){
-        if($perm == "allow"){
-            $userinsert = $handle->prepare("INSERT INTO user_ranks (username, rank_id, node) VALUES(:username, :rank_id, :node)");
-            $userinsert->execute(["username" => $username, "rank_id" => 2, "node" => "B"]);
-            $new_rank = 2;
-            rank_audit($changer, $change_type, $change_slachtoffer, $rank_id, $new_rank,$reason, $change_date);
-            header("Refresh:0");
-        }
-        #PDNEX
-        else{
-            ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script> <?php
-        }
-        
-    }
-    #PEX
-    elseif($perm == "allow"){
-        $new_rank_id = $rank_id + 1;
-        $new_rank = $new_rank_id;
-        $old_rank = $rank_id;
-        $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
-        $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
-        rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank,$reason, $change_date);
-        header("Refresh:0");
-    }
-
-    else{
-        ?>
-        <script>
-            swal("No permission", "You don't have the appropriate permissions to complete this action.", "error");
-            </script>
-        <?php
-    }
-
+    $zoekgebruiker->promote($username);
 }
 
 if(isset($_POST["demote"])){
-    $reason = htmlspecialchars($_POST["reason"]);
-    $change_date = date('d/m/Y');
-    $change_slachtoffer = $username;
-    $change_type = "Degradatie";
-    $changer = $usernamea;
-    $perm = get_perm($perm_id, $change_type, $rank_id);
-    if($user == "DNEX"){
-        ?>
-            <script>
-                swal("Error", "Deze gebruiker kan geen degradatie ontvangen!", "error");
-            </script>
-            <?php
-    }
-    #DEX
-    else{
-        if($rank_id > 1){
-            if($perm == "allow"){
-                $old_rank = $rank_id;
-                $new_rank_id = $rank_id - 1;
-                $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
-                $userpromote->execute(["rank_id" => $new_rank_id, "username" => $username]);
-                rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, $new_rank_id,$reason, $change_date);
-                header("Refresh:0");
-            }
-            else{
-                ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script> <?php
-            }
-            
-        }
-        else{
-            ?>
-            <script>
-                swal("Error", "Deze gebruiker kan geen degradatie ontvangen!", "error");
-                </script>
-            <?php
-        }
-    }
+    $zoekgebruiker->demote($username);
 }
 
 
 if(isset($_POST["ontslag"])){
-    $reason = htmlspecialchars($_POST["reason"]);
-    $change_date = date('d/m/Y');
-    $change_slachtoffer = $username;
-    $change_type = "Ontslag";
-    $changer = $usernamea;
-    $perm = get_perm($perm_id, $change_type, $rank_id);
-    if($user == "DNEX"){
-        ?>
-            <script>
-                swal("Error", "Deze gebruiker kan geen ontslag ontvangen!", "error");
-                </script>
-            <?php
-    }
-    if($perm == "allow"){
-        $old_rank = $rank_id;
-        $userpromote = $handle->prepare("DELETE FROM user_ranks WHERE username = :username");
-        $userpromote->execute(["username" => $username]);
-        rank_audit($changer, $change_type, $change_slachtoffer, $old_rank, 0,$reason, $change_date);
-        header("Refresh:0");
-    }
-    else{
-        ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script> <?php
-    }
+    $zoekgebruiker->ontslagen($username);
 }
 
 if(isset($_POST["custom"])){
@@ -258,16 +107,7 @@ if(isset($_POST["custom"])){
     }
     
 }
-?>
 
-    <div class="name">
-        <a href="home.php">⌂ Home </a>
-        <?php echo "<p id='a'> $bericht </p>" ?>
-    </div>
-
-
-<?php
-require_once("includes/navbar.inc.php"); 
 #start van Page 0
 if($page == 0){
     

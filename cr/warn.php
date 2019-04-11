@@ -1,16 +1,16 @@
 <?php
+include("../connect.php");
 session_start();
-include("../../connect.php");
-if(isset($_POST["logout"])){
-    session_destroy();
-    header("location:../../../index.php");
-  }
-
-if(isset($_SESSION["warned"])){
+if(isset($_SESSION["warned"]) AND isset($_SESSION["username"])){
+    require("includes/header.inc.php");
     $usernamea = $_SESSION["username"];
     $bericht = "Welkom $usernamea";
     $username = $_SESSION["warned"];
     $warner = $_SESSION["warner"];
+}
+else{
+    die();
+    header("LOCATION:../index.php");
 }
 
 if(isset($_POST["warn"])){
@@ -21,7 +21,7 @@ if(isset($_POST["warn"])){
         $warn_query->execute(["waarschuwer" => $warner, "gewaarschuwde" => $username, "reden" => $reden, "warn_type" => $warn_type]);
         unset($_SESSION['warned']);
         unset($_SESSION['warner']);
-        header("location:../home.php");
+        header("location:home.php");
     }
     else{
         ?>
@@ -30,32 +30,9 @@ if(isset($_POST["warn"])){
 
     }
 }
+
+
 ?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>CakeRankings - Staff</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">    
-    <link rel="stylesheet" type="text/css" href="../style/main.css"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-</head> 
-
-<body>
-    <div class="name">
-    <a href="home.php"> Home </a>
-    <?php echo "<p id='a'> $bericht </p>" ?>
-    <form method="POST">
-        <button name="logout" class="btn btn-outline-light">Uitloggen</button>
-        <a role="button" class="btn btn-outline-light" href="../paneel">Sollicitaties</a>
-    </form>
-</div>
-
 
 
 

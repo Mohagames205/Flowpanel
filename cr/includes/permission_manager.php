@@ -34,7 +34,7 @@ function get_perm($perm_id, $change_type, $rank_id){
     #Permissions voor degra
     
     case "Degradatie":
-        if($perm_id >= 3 AND $rank_id >= 3 AND $rank_id <= 6){
+        if($perm_id >= 3 AND $rank_id >= 2 AND $rank_id <= 8){
             $perm = "allow";
             return $perm;
         }
@@ -45,7 +45,7 @@ function get_perm($perm_id, $change_type, $rank_id){
     break;
 
     case "Ontslag":
-        if($perm_id >= 4 AND $rank_id >= 2 AND $rank_id <= 6){
+        if($perm_id >= 4 AND $rank_id >= 1 AND $rank_id <= 8){
             $perm = "allow";
             return $perm;
         }
