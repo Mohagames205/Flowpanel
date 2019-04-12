@@ -1,6 +1,7 @@
 <?php
 session_start();
 if(isset($_SESSION["username"])){
+    require("../connect.php");
     require("includes/header.inc.php");
     $lists = new Lists;
     #Getting permission ID

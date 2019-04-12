@@ -1,11 +1,11 @@
 <?php
 session_start();
 if(isset($_SESSION["username"])){
+    require("../connect.php");
     require("includes/header.inc.php");
     $lists = new Lists;
     $zoekgebruiker = new User($usernamea);
     #Getting permission ID
-    $zoekgebruiker->getUserdata($usernamea);
     $perm_id = $zoekgebruiker->perm_id;
     
     
@@ -21,6 +21,7 @@ else{
 if(isset($_GET["naam"])){
     $page = 1;
     $naam = htmlspecialchars($_GET["naam"]);
+    $zoekgebruiker->getUserdata($naam);
     $usernamequery = $handle->prepare("SELECT username FROM user_ranks WHERE username = :naam");
     $us = $usernamequery->execute(["naam" => $naam]);
     $username = $usernamequery->fetch(PDO::FETCH_ASSOC);
@@ -80,6 +81,11 @@ if(isset($_POST["del"])){
         ?><script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script><?php
     }
     
+}
+
+if(isset($_SESSION["error"])){
+    echo $_SESSION["error"];
+    unset($_SESSION["error"]);
 }
 
 if(isset($_POST["promote"])){
@@ -181,7 +187,7 @@ if($page == 1){
 <?php 
 if($user == "EX" AND $rank_id > 0 ){
     ?>
-<td><?php echo $node ?> </td>
+<td><?php echo get_dep_name($zoekgebruiker->gez_afdeling); ?> </td>
 
 <td> <form method="POST"><button type="submit" name="warn" value="<?php echo $username ?>">Warn</button></form></td>
 <?php }

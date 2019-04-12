@@ -3,18 +3,33 @@
 class User{
 
     public $gez_user;
-    public $rank_id;
-    public $perm_id;
+    public $gez_rank_id;
     public $userstate;
+
+    public $perm_id;
     public $username;
+    public $rank_id;
+    public $afdeling;
+    public $user_id;
+    public $promo_tag = "soon";
+    public $motto;
 
     public function __construct($username){
         include("../connect.php");
         $siteUser = $handle->prepare("SELECT * FROM users WHERE username = :username");
         $siteUser->execute(["username" => $username]);
         $siteUser = $siteUser->fetch(PDO::FETCH_ASSOC);
+
+        $off_siteUser = $handle->prepare("SELECT * FROM user_ranks WHERE username = :username");
+        $off_siteUser->execute(["username" => $username]);
+        $off_siteUser = $off_siteUser->fetch(PDO::FETCH_ASSOC);
+        
         $this->perm_id = $siteUser["perm_id"];
-        $this->username = $username;
+        $this->username = $siteUser["username"];
+        $this->rank_id = $off_siteUser["rank_id"];
+        $this->afdeling = $off_siteUser["afdeling_id"];
+        $this->user_id = $siteUser["user_id"];
+        $this->motto = $off_siteUser["motto"];
     }
 
     public function getUserdata($username){
@@ -26,12 +41,13 @@ class User{
         if(!empty($userData)){
             $this->userstate = "EX";
             $this->gez_user = $userData["username"];
-            $this->rank_id = $userData["rank_id"];
+            $this->gez_rank_id = $userData["rank_id"];
+            $this->gez_afdeling = $userData["afdeling_id"];
         }
         else{
             $this->userstate = "DNEX";
             $this->gez_user = $username;
-            $this->rank_id = 0;
+            $this->gez_rank_id = 0;
         }
 
     }
@@ -41,7 +57,7 @@ class User{
         $this->getUserdata($gez_user);
         include("../connect.php");
         $username = $this->username;
-        $rank_id = $this->rank_id;
+        $rank_id = $this->gez_rank_id;
         $perm_id = $this->perm_id;
         $reason = htmlspecialchars($_POST["reason"]);
         $change_date = date('d/m/Y');
@@ -87,7 +103,7 @@ class User{
         include("../connect.php");
         $this->getUserdata($gez_user);
         $perm_id = $this->perm_id;
-        $rank_id = $this->rank_id;
+        $rank_id = $this->gez_rank_id;
         $reason = htmlspecialchars($_POST["reason"]);
         $change_date = date('d/m/Y');
         $change_slachtoffer = $this->gez_user;
@@ -128,7 +144,7 @@ class User{
         $this->getUserdata($gez_user);
         $reason = htmlspecialchars($_POST["reason"]);
         $change_date = date('d/m/Y');
-        $perm = get_perm($this->perm_id, "Ontslag", $this->rank_id);
+        $perm = get_perm($this->perm_id, "Ontslag", $this->gez_rank_id);
 
         if($this->userstate == "DNEX"){
             ?><script>swal("Error", "Deze gebruiker kan geen ontslag ontvangen!", "error");</script><?php
@@ -137,12 +153,20 @@ class User{
         if($perm == "allow"){
             $userpromote = $handle->prepare("UPDATE user_ranks SET rank_id = :rank_id WHERE username = :username");
             $userpromote->execute(["username" => $this->gez_user, "rank_id" => -1]);
-            rank_audit($this->username, "Ontslag", $this->gez_user, $this->rank_id, -1 ,$reason, $change_date);
+            rank_audit($this->username, "Ontslag", $this->gez_user, $this->gez_rank_id, -1 ,$reason, $change_date);
             header("Refresh:0");
         }
 
         else{
             ?> <script> swal("No permission", "You don't have the appropriate permissions to complete this action.", "error"); </script> <?php
         }
+    }
+
+    public function promoCount($username){
+        include("../connect.php");
+        $promoCount = $handle->prepare("SELECT * FROM audit_log WHERE changer = :username");
+        $promoCount->execute(["username" => $username]);
+        $promoCount = $promoCount->rowCount();
+        return $promoCount;
     }
 }
