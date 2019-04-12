@@ -2,7 +2,7 @@
 # FlowPanel
 ### Rank management made easy
 
-**Notice**: Once all to-do tasks in https://github.com/Mohagames205/Flowpanel/projects/1 are done, the current project won't be updated anymore because it will be rewritten completely.
+**Notice**: Please download the latest release from https://github.com/Mohagames205/Flowpanel/releases. If you clone the files from the repo there is a small chance that it will actually work.
 
 
 ### Features
