@@ -1,5 +1,4 @@
 {
-    "path":"",
-    "installer":"enable"
+    "path": "localhost",
+    "installer": "disable"
 }
-
