@@ -1,3 +1,5 @@
 
 cr/classes/user.inc.php
 cr/testing.php
+config/behaviour.json
+config/database.json
