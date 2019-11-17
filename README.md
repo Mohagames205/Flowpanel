@@ -1,2 +1,6 @@
-## This will not be updated anymore, simply because this code is **trash**. I will be focussing on other projects like "Scholex" and my MCPE plugins. Also, don't use this because it's unsafe. If you would use this you would risk all your database credentials to be exposed if you don't setup your webhost correctly.
+## OPGEPAST!
+
+Ik ben bezig met een nieuwe rewrite van FlowPanel. **GEBRUIK DE VERSIE VAN DE MASTER BRANCH NIET!**
+
+De nieuwe rewrite zal meer Object Oriented zijn, zo is mijn code cleaner. De volgende rewrite zal waarschijnlijk in Laravel ofzoiets zijn.
 
