@@ -1,19 +1,13 @@
-@extends('layouts.app')
+@extends("layouts.banner")
 
-@section('content')
+@section("menu")
 
-    <link href="{{ asset('css/home.css') }}" rel="stylesheet">
-        <div class="name">
-            <a href="/">⌂ Home </a>
-            <p id='a'> Hoi {{ Auth::User()->name }} </p>
-        </div>
-
-    <div class='search'>
-        <form method="POST" action="/user">
-            <p><b>Username</b></p>
-            @csrf
-            <input type='text' name='naam' id='name' placeholder='Username'>
-            <button type="submit">Zoeken</button>
-        </form>
+    <div class="search">
+    <form method="POST" action="/user">
+        @csrf
+        <p><b>Username</b></p>
+        <input type='text' name='naam' id='name' placeholder='Username'>
+    </form>
     </div>
-@endsection
+
+    @endsection

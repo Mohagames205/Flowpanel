@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="363791c8-9f37-4225-b553-bda5fcb8723f" name="Default Changelist" comment="" />
+    <list default="true" id="363791c8-9f37-4225-b553-bda5fcb8723f" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/resources/views/layouts/banner.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/home.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/home.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/user.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/user.blade.php" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
+  <component name="ComposerSettings" doNotAsk="true" synchronizationState="SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
     <execution>
       <executable />
@@ -131,13 +136,14 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\moham\Documents\code\Flowpanel\resources\views" />
+      <recent name="C:\Users\moham\Documents\code\Flowpanel\resources\views\layouts" />
+      <recent name="C:\Users\moham\Documents\code\Flowpanel\public" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\moham\Documents\code\Flowpanel\public\assets" />
       <recent name="C:\Users\moham\Documents\code\Flowpanel\public\pictures" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\moham\Documents\code\Flowpanel\public" />
-      <recent name="C:\Users\moham\Documents\code\Flowpanel\resources\views" />
     </key>
   </component>
   <component name="RunManager">
@@ -168,7 +174,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1581262934601</updated>
-      <workItem from="1581262941076" duration="9828000" />
+      <workItem from="1581262941076" duration="9968000" />
+      <workItem from="1581273880836" duration="858000" />
     </task>
     <servers />
   </component>
@@ -180,9 +187,13 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="461" y="163" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1581272248854" />
-    <state x="636" y="344" key="com.intellij.ide.util.TipDialog" timestamp="1581262976277">
+    <state x="552" y="249" key="Vcs.Push.Dialog.v2" timestamp="1581277602527">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="636" y="344" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1581262976277" />
+    <state x="552" y="249" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1581277602527" />
+    <state x="636" y="344" key="com.intellij.ide.util.TipDialog" timestamp="1581273882383">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="636" y="344" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1581273882383" />
   </component>
 </project>

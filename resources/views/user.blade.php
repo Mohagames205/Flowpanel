@@ -1,17 +1,21 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>User</title>
-</head>
-<body>
+@extends("layouts.banner")
 
-     {{ $user->name }}
+    @section("menu")
+
+        <div class="profile">
 
 
+            <table class="table table-striped table-dark table-bordered">
+                <th colspan="3" class="nametable"> {{ $user->name }}</th>
+                <tr>
+                    <th scope="row">Rank</th>
 
-</body>
-</html>
+                </tr>
+                <tr>
+                    <td>{{ $user->rank_id }}</td>
+                </tr>
+            </table>
+
+        </div>
+
+    @endsection
