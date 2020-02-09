@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="363791c8-9f37-4225-b553-bda5fcb8723f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/errors/404.blade.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/welcome.blade.php" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,7 +174,7 @@
       <option name="presentableId" value="Default" />
       <updated>1581262934601</updated>
       <workItem from="1581262941076" duration="9968000" />
-      <workItem from="1581273880836" duration="1098000" />
+      <workItem from="1581273880836" duration="1480000" />
     </task>
     <task id="LOCAL-00001" summary="Basic zoek functionaliteit toegevoegd">
       <created>1581277633273</created>
