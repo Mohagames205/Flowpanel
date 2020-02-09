@@ -13,6 +13,9 @@
       <executable />
     </execution>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="PhpWorkspaceProjectConfiguration">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-intl-idn" />
@@ -106,6 +109,7 @@
     </include_path>
   </component>
   <component name="ProjectId" id="1XZoNBhDGFmmlzhmqYxAslp8OBk" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -164,7 +168,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1581262934601</updated>
-      <workItem from="1581262941076" duration="9380000" />
+      <workItem from="1581262941076" duration="9828000" />
     </task>
     <servers />
   </component>
