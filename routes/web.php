@@ -21,4 +21,11 @@ Route::post("/user", "UserController@search");
 
 Route::get("/user/{username}", "UserController@show");
 
+// Changers
+
+Route::put("/user/{username}", "UserController@update");
+
+Route::delete("/user/{username}", "UserController@delete");
+
+
 

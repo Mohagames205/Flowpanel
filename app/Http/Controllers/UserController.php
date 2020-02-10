@@ -30,4 +30,49 @@ class UserController extends Controller
         return redirect("/user/$request");
 
     }
+
+    public function update(User $username)
+    {
+
+        switch(request()->get("changeval")){
+
+            case "promote":
+                $this->promote($username);
+                return redirect("/user/" . $username->name);
+
+            case "demote":
+                $this->demote($username);
+                return redirect("/user/" . $username->name);
+
+            case "ontslag":
+                $this->ontslagen($username);
+                return redirect("/user/" . $username->name);
+
+        }
+    }
+
+    public function promote(User $user)
+    {
+        User::where("name", $user->name)->update(["rank_id" => $user->rank_id + 1]);
+
+    }
+
+    public function demote(User $user)
+    {
+        User::where("name", $user->name)->update(["rank_id" => $user->rank_id - 1]);
+    }
+
+
+    public function ontslagen(User $user)
+    {
+        User::where("name", $user->name)->update(["rank_id" => -1]);
+    }
+
+    public function delete(User $user)
+    {
+
+    }
+
+
+
 }
